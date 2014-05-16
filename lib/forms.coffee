@@ -1,8 +1,11 @@
 _ = require "underscore"
+valids = require "valids"
 
+###*
+ * Validates rules within a rule group asynchronously. This will stop
+ * validating on first validation failure or error.
+###
 validateRuleGroup = (group, display, value, cb) ->
-  # Validate rules within a rule group asynchronously.
-  # Stop on first validation failure or error.
   async.each _.keys(group), (ruleName, cb) ->
     param = group[ruleName]
     if _.isFunction param
@@ -20,6 +23,9 @@ validateRuleGroup = (group, display, value, cb) ->
       if message then cb {message} else cb()
   , cb
 
+###*
+ * Validates a field and stops validating on first validation failure or error.
+###
 validateField = (field, schema, value, cb) ->
   # Get a user-friendly display name for the field.
   displayName = schema.displayName or field
@@ -38,6 +44,9 @@ validateField = (field, schema, value, cb) ->
     validateRuleGroup group, display, value, cb
   , cb
 
+###*
+ * Validates all values in data against the fields given in the schema.
+###
 validateAll = (schema, data, cb) ->
   valid = true
   messages = {}
