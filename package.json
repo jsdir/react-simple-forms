@@ -1,0 +1,29 @@
+{
+  "name": "react-simple-forms",
+  "version": "0.0.0",
+  "description": "Simple forms for react. Loosely based on react-forms.",
+  "main": "index.js",
+  "dependencies": {
+    "lodash": "~2.4.1",
+    "valids": "~0.1.2"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/jsdir/react-simple-forms.git"
+  },
+  "keywords": [
+    "react",
+    "reactjs",
+    "forms"
+  ],
+  "author": "Jason Sommer",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/jsdir/react-simple-forms/issues"
+  },
+  "homepage": "https://github.com/jsdir/react-simple-forms"
+}
