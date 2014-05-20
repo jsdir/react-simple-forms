@@ -1,3 +1,4 @@
+_ = require "lodash"
 React = require "react"
 
 {div, input, textarea, select, option} = React.DOM
@@ -86,4 +87,6 @@ componentMap =
   multiline: FormMultilineInput
   date: DateSelector
 
-module.exports = (type) -> componentMap[type]
+getInputForType = (type) -> componentMap[type]
+
+module.exports = getInputForType
