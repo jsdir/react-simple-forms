@@ -1,5 +1,6 @@
 _ = require "lodash"
 valids = require "valids"
+React = require "react"
 
 ###*
  * Validates rules within a rule group asynchronously. This will stop
@@ -68,12 +69,54 @@ validateAll = (schema, data, cb) ->
       messageField = _.first _.intersection fieldNames, _.keys messages
       cb messages, data, messages[messageField]
 
+FormContextMixin =
+  childContextTypes:
+    schema: React.PropTypes.object
+    message: React.PropTypes.string
+
+  getChildContext: ->
+    schema: @props.schema
+    message: @state.message
+
+FormElementMixin =
+  contextTypes:
+    schema: React.PropTypes.object
+    message: React.PropTypes.string
+
+FormField = React.createClass
+  displayName: "FormField"
+
+  mixins: [FormElementMixin]
+
+  render: ->
+    schema = @context.schema
+    fieldSchema = schema[@props.name]
+    component = fieldSchema.component or "string"
+    if _.isString component then component = fieldComponentMap[component]
+
+    return @transferPropsTo component
+      onChange: (value) -> schema.onFieldChange @props.name, value
+      valid: @context.validFields[@props.name]
+      pending: @context.pendingFields[@props.name]
+      showTicks: @context.ticks
+
+FormMessage = React.createClass
+  displayName: "FormMessage"
+
+  mixins: [FormElementMixin]
+
+  render: ->
+    if @context.message
+      div className: "error-message", @context.message
+
 Form = React.createClass
   displayName: "Form"
 
+  mixins: [FormContextMixin]
+
   getInitialState: -> data: {}
 
-  onFieldInput: (field, value) ->
+  onFieldChange: (field, value) ->
     # First, set the field's state value.
     state = data: {}
     state.data[field] = value
@@ -122,12 +165,3 @@ Form = React.createClass
   render: -> @props.children
     # React.Children.map @props.children (child) ->
     # pass @props.showChecks
-
-FormMessage = React.createClass
-  displayName: "FormMessage"
-  render: ->
-    div className: "error-message", @props.message
-
-FormField = React.createClass
-  displayName: "FormField"
-  render: ->
