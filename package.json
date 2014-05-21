@@ -19,9 +19,7 @@
     "url": "git://github.com/jsdir/react-simple-forms.git"
   },
   "browserify": {
-    "transform": [
-      "coffeeify"
-    ]
+    "transform": ["coffeeify"]
   },
   "keywords": [
     "react",
