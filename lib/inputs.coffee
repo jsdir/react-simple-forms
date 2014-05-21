@@ -4,15 +4,15 @@ React = require "react"
 {div, input, textarea, select, option} = React.DOM
 
 StringInput = React.createClass
-  displayName: "FormStringInput"
+  displayName: "StringInput"
   render: -> @transferPropsTo input()
 
 PasswordInput = React.createClass
-  displayName: "FormPasswordInput"
+  displayName: "PasswordInput"
   render: -> @transferPropsTo input type: "password"
 
 MultilineInput = React.createClass
-  displayName: "FormMultilineInput"
+  displayName: "MultilineInput"
   render: -> @transferPropsTo textarea()
 
 monthNames = ["January", "February", "March", "April", "May", "June", "July",
@@ -81,12 +81,34 @@ DateSelector = React.createClass
       @renderDaySelector()
       @renderYearSelector()
 
-componentMap =
-  string: InputComponent
-  password: FormPasswordInput
-  multiline: FormMultilineInput
-  date: DateSelector
+ChoiceSelector = React.createClass
+  displayName: "ChoiceSelector"
 
-getInputForType = (type) -> componentMap[type]
+  propTypes:
+    choices: React.PropTypes.object
+    default: React.PropTypes.string
+    onChange: React.PropTypes.func
 
-module.exports = getInputForType
+  getInitialState: ->
+    choice: null
+
+  onChoiceSelect: (choice) ->
+    @setState {choice}
+    @props.onChange choice
+
+  render: ->
+    div className: "btn-group", _.map @props.choices, (choice) =>
+      button
+        onClick: => @onChoiceSelect choice
+        className: "active" if @state.choice is choice
+      , @props.choices[choice]
+
+module.exports = {
+  StringInput
+  PasswordInput
+  MultilineInput
+
+  # A Selector is an Input for predefined values.
+  DateSelector
+  ChoiceSelector
+}

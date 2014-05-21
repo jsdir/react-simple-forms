@@ -6,7 +6,7 @@ inputs = require "./inputs"
 ###*
  * Wraps any element with an onClick callback to submit the enclosing form.
 ###
-Submit = React.createComponent
+Submit = React.createClass
   displayName: "ReactFormSubmit"
 
   mixins: [mixins.FormElementMixin]

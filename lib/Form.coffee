@@ -1,6 +1,6 @@
 React = require "react"
 
-mixins = require ".mixins"
+mixins = require "./mixins"
 
 {validateField, validateAll} = require "./validate"
 
