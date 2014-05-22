@@ -1,7 +1,7 @@
 Form = require "./lib/Form"
 elements = require "./lib/elements"
-mixins = require "./lib/mixins"
 inputs = require "./lib/inputs"
+mixins = require "./lib/mixins"
 
 module.exports = {
   Form

@@ -3,11 +3,10 @@ React = require "react"
 mixins = require "./mixins"
 
 {validateField, validateAll} = require "./validate"
+{div} = React.DOM
 
 Form = React.createClass
   displayName: "Form"
-
-  mixins: [mixins.FormContextMixin]
 
   getInitialState: -> data: {}
 
@@ -57,8 +56,100 @@ Form = React.createClass
         # No error happened.
         @props.onSubmit data
 
-  render: -> @props.children
-    # React.Children.map @props.children (child) ->
+  render: -> div null, @props.children
+    React.Children.map @props.children (child) ->
+      if child.
     # pass @props.showChecks
+
+###
+schema.interactive always shows indicators
+###
+
+Form = React.createClass
+  displayName: "Form"
+
+  getInitialState: ->
+    showMessage: false
+    message: ""
+
+  onFieldChange: (field, value) ->
+    @setState showMessage: false
+    @setState data.field: value
+
+  setFieldMessage: (field, message) ->
+    @setState {showMessage: true, message}
+
+  submit: ->
+    # Interactive fields have shown validity through the cumulative results
+    # from setFieldMessage.
+    fieldsData =
+      schema: @props.schema
+      messages: @props.messages
+
+    validate.validateAll fieldsData, @state.data, (message) ->
+      # dupe
+      if message
+        @setState {showMessage: true, message}
+      else
+        @setState showMessage: false
+
+  render: ->
+    # Helper method will wrap this.
+    div null,
+      if @state.showMessage then Forms.Message message: @state.message
+      FieldWrapper
+        field: inputs.IntegerField()
+        setMessage: (message) => @setFieldMessage "field", message
+        onChange: (value) => @onFieldChange "field", value
+      button onClick: @submit, "Submit"
+
+FieldWrapper = React.createClass
+  displayName: "FieldWrapper"
+
+  getInitialState: ->
+    invalid: false
+    showIndicator: false
+
+  onChange: (value) ->
+    ###
+    @props.fieldData =
+      name: "fieldName"
+      schema: schema
+      messages: errorMessages
+    ###
+
+    @validate value if schema.interactive
+    if schema.interactive
+      validate.validateField @props.fieldData, value, (message) =>
+        # All interactive fields will show an indicator on input.
+        @setState showIndicator: true, invalid: message?
+        @props.setMessage message
+
+    @hideError()
+    @setState {value}
+    @props.onChange value
+
+  onFocus: -> @hideError()
+
+  hideError: -> @setState showIndicator: false, invalid: false
+
+  onBlur: ->
+    if @state.value and not @props.fieldData.interactive
+      @validate @state.value
+
+  validate: (value) ->
+    validate.validateField @props.fieldData, value, (message) =>
+      # All interactive fields will show an indicator on input.
+      @setState showIndicator: true, invalid: message?
+      @props.setMessage message
+
+  render: ->
+    @props.field
+      value: @state.value
+      onChange: @onChange
+      onFocus: @onFocus
+      onBlur: @onBlur
+      invalid: @state.invalid
+      showIndicator: @state.showIndicator
 
 module.exports = Form

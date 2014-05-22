@@ -3,13 +3,15 @@ React = require "react"
 mixins = require "./mixins"
 inputs = require "./inputs"
 
+{div} = React.DOM
+
 ###*
  * Wraps any element with an onClick callback to submit the enclosing form.
 ###
 Submit = React.createClass
   displayName: "ReactFormSubmit"
 
-  mixins: [mixins.FormElementMixin]
+  #mixins: [mixins.FormElementMixin]
 
   render: -> @props.children onClick: @context.submit
 
@@ -19,9 +21,14 @@ Submit = React.createClass
 Field = React.createClass
   displayName: "ReactFormField"
 
-  mixins: [mixins.FormElementMixin]
+  #mixins: [mixins.FormElementMixin]
+  contextTypes:
+    foo: React.PropTypes.number
 
   render: ->
+    console.log @props
+    console.log @context
+    ###
     fieldSchema = @context.schema[@props.name]
     component = fieldSchema.component or "string"
     if _.isString component then component = inputs.getInputForType component
@@ -31,6 +38,8 @@ Field = React.createClass
       valid: @context.validFields[@props.name]
       pending: @context.pendingFields[@props.name]
       showTicks: @context.ticks
+    ###
+    return div()
 
 ###*
  * Shows an error message on validation error or failure.
@@ -38,11 +47,18 @@ Field = React.createClass
 Message = React.createClass
   displayName: "ReactFormMessage"
 
-  mixins: [mixins.FormElementMixin]
+  #mixins: [mixins.FormElementMixin]
+
+  contextTypes:
+    foo: React.PropTypes.string,
+    depth: React.PropTypes.number
 
   render: ->
+    console.log this.context
     if @context.message
       return div className: "error-message", @context.message
+    else
+      return div()
 
 module.exports = {
   Submit

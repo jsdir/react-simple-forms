@@ -25,16 +25,17 @@ validateRuleGroup = (group, display, value, cb) ->
 ###*
  * Validates a field and stops validating on first validation failure or error.
 ###
-validateField = (field, schema, value, cb) ->
+validateField = (fieldData, value, cb) ->
   # Get a user-friendly display name for the field.
-  displayName = schema.displayName or field
+  fieldSchema = fieldData.schema
+  displayName = fieldSchema.displayName or fieldData.name
 
   # Get an array of rules grouped by priority with first and last in the
   # array corresponding to first and last in validation order.
-  if _.isArray schemaField.rules
-    rules = schemaField.rules
-  else if schemaField.rules
-    rules = [schemaField.rules]
+  if _.isArray fieldSchema.rules
+    rules = fieldSchema.rules
+  else if fieldSchema.rules
+    rules = [fieldSchema.rules]
   else
     rules = []
 
