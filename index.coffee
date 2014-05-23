@@ -1,4 +1,4 @@
-Form = require "./lib/Form"
-inputs = require "./lib/inputs"
+Form = require "./lib/Form.coffee"
+inputs = require "./lib/inputs.coffee"
 
-module.exports = {Form.Form, inputs}
+module.exports = {Form, inputs}
