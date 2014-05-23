@@ -1,72 +1,28 @@
 React = require "react"
 
-mixins = require "./mixins"
-
-{validateField, validateAll} = require "./validate"
-{div} = React.DOM
+elements = require "./elements"
+validate = require "./validate"
 
 Form = React.createClass
   displayName: "Form"
 
-  getInitialState: -> data: {}
+  propTypes:
+    schema: React.PropTypes.object.isRequired
+    messages: React.PropTypes.object
+    components: React.PropTypes.func.isRequired
+    onSubmit: React.PropTypes.func
 
-  onFieldChange: (field, value) ->
-    # First, set the field's state value.
-    state = data: {}
-    state.data[field] = value
+  childContextTypes: ->
+    submit: React.PropTypes.func
+    schema: React.PropTypes.object
+    onChange: React.PropTypes.func
+    setMessage: React.PropTypes.func
 
-    schema = @props.schema[field]
-    if schema.continuousValidation
-
-      # Second, set the field state as pending.
-      state = {}
-      state[field].pending = true
-      @setState state
-
-      # Third, perform validation. The validation methods may be either
-      # synchronous or asynchronous.
-      state = {}
-      validateField field, schema, value, (err, message) =>
-        state[field].pending = false
-        errorMessage = err or message
-        if errorMessage
-          # Internal error or validation error happened.
-          state[field].valid = false
-          state.error = errorMessage
-        else
-          # No error happened.
-          state[field].valid = true
-
-    @setState state
-
-  onFieldFocus: (field) ->
-    # Focusing on a field removes all associated error indicators.
-    state = {}
-    state[field]
-
-  onFieldBlur: (field) ->
-
-  submit: ->
-    # Validate the entire form before running the success callback.
-    validateAll @props.schema, @state.data, (messages, data, firstMessage) ->
-      if firstMessage
-        # Internal error or validation error happened.
-        @setState error: firstMessage
-      else
-        # No error happened.
-        @props.onSubmit data
-
-  render: -> div null, @props.children
-    React.Children.map @props.children (child) ->
-      if child.
-    # pass @props.showChecks
-
-###
-schema.interactive always shows indicators
-###
-
-Form = React.createClass
-  displayName: "Form"
+  getChildContext: ->
+    submit: @submit
+    schema: @props.schema
+    onChange: @onFieldChange
+    setMessage: @setFieldMessage
 
   getInitialState: ->
     showMessage: false
@@ -86,28 +42,73 @@ Form = React.createClass
       schema: @props.schema
       messages: @props.messages
 
+    # validateAll should exclude setFieldMessage aggregates.
     validate.validateAll fieldsData, @state.data, (message) ->
       # dupe
       if message
         @setState {showMessage: true, message}
+        @setState field valid colors
       else
         @setState showMessage: false
 
-  render: ->
+  ###
+  context:
+    message: -> elements.Message message: @state.message
+    field: (name) ->
+      elements.FieldWrapper
+        setMessage: @contextSetMessage
+        onChange: (value) => @contextOnChange name, value
+        fieldData:
+          name: name
+          schema: @props.schema[name]
+          messages: @props.messages
+
+    submit: 1
+
+  contextSetMessage: (message) -> @setState {message}
+
+  contextOnChange: (fieldName, value) ->
+    @state.data[fieldName] = value
+    @setState data: @state.data
+  ###
+
+  render: -> @props.components()
+    ###
+    @props.components @context
     # Helper method will wrap this.
-    div null,
+    React.DOM.div null,
       if @state.showMessage then Forms.Message message: @state.message
       FieldWrapper
         field: inputs.IntegerField()
         setMessage: (message) => @setFieldMessage "field", message
         onChange: (value) => @onFieldChange "field", value
       button onClick: @submit, "Submit"
+    ###
 
 ###
-@props.fieldData =
-  name: "fieldName"
-  schema: schema
-  messages: errorMessages
+formComponents = (ctx) ->
+  div className: "form",
+    ctx.message()
+    ctx.field "login"
+    ctx.field "password"
+    div className: "special-field",
+      ctx.field "special-field"
+    ctx.submit
+      LaddaButton null,
+        button null, "Submit"
+
+Forms.Form
+  schema: userSchema
+  messages: {}
+  onSubmit: @submit
+  children: ->
+    Forms.Message()
+    Forms.Field name: "login"
+    div className: "special-field",
+      Forms.Field name: "password"
+    LaddaButton null,
+      Forms.Submit null,
+        button null, "Submit"
 ###
 
-module.exports = Form
+module.exports = {Form, makeForm}
