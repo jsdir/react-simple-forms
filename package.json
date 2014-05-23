@@ -23,7 +23,8 @@
     "coffeeify": "~0.6.0",
     "karma-phantomjs-launcher": "~0.1.4",
     "karma-coffee-preprocessor": "~0.2.1",
-    "karma-chrome-launcher": "~0.1.4"
+    "karma-chrome-launcher": "~0.1.4",
+    "coffee-script": "~1.7.1"
   },
   "scripts": {
     "test-watch": "./node_modules/karma/bin/karma start --auto-watch --browsers Chrome --no-single-run karma.conf.coffee",
