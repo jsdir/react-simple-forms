@@ -103,55 +103,11 @@ Form = React.createClass
         onChange: (value) => @onFieldChange "field", value
       button onClick: @submit, "Submit"
 
-FieldWrapper = React.createClass
-  displayName: "FieldWrapper"
-
-  getInitialState: ->
-    invalid: false
-    showIndicator: false
-
-  onChange: (value) ->
-    ###
-    @props.fieldData =
-      name: "fieldName"
-      schema: schema
-      messages: errorMessages
-    ###
-
-    @setState {value}
-
-
-    @validate() if schema.interactive
-    if schema.interactive
-      validate.validateField @props.fieldData, value, (message) =>
-        # All interactive fields will show an indicator on input.
-        @setState showIndicator: true, invalid: message?
-        @props.setMessage message
-
-    @hideError()
-    @props.onChange value
-
-  onFocus: -> @hideError()
-
-  hideError: -> @setState showIndicator: false, invalid: false
-
-  onBlur: ->
-    if @state.value and not @props.fieldData.interactive
-      @validate @state.value
-
-  validate: ->
-    validate.validateField @props.fieldData, @state.value, (message) =>
-      # All interactive fields will show an indicator on input.
-      @setState showIndicator: true, invalid: message?
-      @props.setMessage message
-
-  render: ->
-    @props.field
-      value: @state.value
-      onChange: @onChange
-      onFocus: @onFocus
-      onBlur: @onBlur
-      invalid: @state.invalid
-      showIndicator: @state.showIndicator
+###
+@props.fieldData =
+  name: "fieldName"
+  schema: schema
+  messages: errorMessages
+###
 
 module.exports = Form

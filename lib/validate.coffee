@@ -4,7 +4,7 @@ _ = require "lodash"
  * Validates rules within a rule group asynchronously. This will stop
  * validating on first validation failure or error.
 ###
-validateRuleGroup = (group, display, value, cb) ->
+validateRuleGroup = (group, displayName, value, cb) ->
   async.each _.keys(group), (ruleName, cb) ->
     param = group[ruleName]
     if _.isFunction param
@@ -18,7 +18,7 @@ validateRuleGroup = (group, display, value, cb) ->
       # Validators from the valids library don't throw validation errors.
       # Only failures are passed. Since failures also need to stop the
       # asynchronous iteration, the message will be passed as an error.
-      message = valids[name] display, value, param, @options.messages[name]
+      message = valids[name] displayName, value, param, @options.messages[name]
       if message then cb {message} else cb()
   , cb
 
@@ -47,12 +47,12 @@ validateField = (fieldData, value, cb) ->
 ###*
  * Validates all values in data against the fields given in the schema.
 ###
-validateAll = (schema, data, cb) ->
+validateAll = (formData, data, cb) ->
   valid = true
   messages = {}
 
   # Validate fields asynchronously. Do not stop on any validation failures.
-  fieldNames = _.keys schema
+  fieldNames = _.keys formData.schema
   async.each fieldNames, (fieldName, cb) ->
     fieldSchema = schema[fieldName]
     validateField fieldName, fieldSchema, data[fieldName], (err) ->
