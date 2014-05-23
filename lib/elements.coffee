@@ -1,67 +1,57 @@
 React = require "react"
 
-mixins = require "./mixins"
-inputs = require "./inputs"
-
-{div} = React.DOM
-
 ###*
- * Wraps any element with an onClick callback to submit the enclosing form.
+ * An internal wrapper component for a form field.
 ###
-Submit = React.createClass
-  displayName: "ReactFormSubmit"
+FieldWrapper = React.createClass
+  displayName: "FieldWrapper"
 
-  #mixins: [mixins.FormElementMixin]
+  getInitialState: ->
+    invalid: false
+    showIndicator: false
 
-  render: -> @props.children onClick: @context.submit
+  onChange: (value) ->
+    @hideError()
+    @setState {value}
+    @validate value if schema.interactive
+    @props.onChange value
 
-###*
- * A proxy element for a form field.
-###
-Field = React.createClass
-  displayName: "ReactFormField"
+  onFocus: -> @hideError()
 
-  #mixins: [mixins.FormElementMixin]
-  contextTypes:
-    foo: React.PropTypes.number
+  hideError: -> @setState showIndicator: false, invalid: false
+
+  onBlur: ->
+    if @state.value and not @props.fieldData.interactive
+      @validate @state.value
+
+  validate: (value) ->
+    validate.validateField @props.fieldData, value, (message) =>
+      # All interactive fields will show an indicator on input.
+      @setState showIndicator: true, invalid: message?
+      @props.setMessage message
 
   render: ->
-    console.log @props
-    console.log @context
-    ###
-    fieldSchema = @context.schema[@props.name]
-    component = fieldSchema.component or "string"
-    if _.isString component then component = inputs.getInputForType component
-
-    return @transferPropsTo component
-      onChange: (value) -> @context.schema.onFieldChange @props.name, value
-      valid: @context.validFields[@props.name]
-      pending: @context.pendingFields[@props.name]
-      showTicks: @context.ticks
-    ###
-    return div()
+    @props.field
+      value: @state.value
+      onChange: @onChange
+      onFocus: @onFocus
+      onBlur: @onBlur
+      invalid: @state.invalid
+      showIndicator: @state.showIndicator
 
 ###*
  * Shows an error message on validation error or failure.
 ###
 Message = React.createClass
-  displayName: "ReactFormMessage"
+  displayName: "FormMessage"
 
-  #mixins: [mixins.FormElementMixin]
-
-  contextTypes:
-    foo: React.PropTypes.string,
-    depth: React.PropTypes.number
+  propTypes:
+    message: React.PropTypes.string,
 
   render: ->
-    console.log this.context
-    if @context.message
-      return div className: "error-message", @context.message
-    else
-      return div()
+    React.DOM.div className: "error-message", @props.message
 
 module.exports = {
-  Submit
-  Field
+  FieldWrapper
   Message
 }

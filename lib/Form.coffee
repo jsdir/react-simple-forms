@@ -118,7 +118,10 @@ FieldWrapper = React.createClass
       messages: errorMessages
     ###
 
-    @validate value if schema.interactive
+    @setState {value}
+
+
+    @validate() if schema.interactive
     if schema.interactive
       validate.validateField @props.fieldData, value, (message) =>
         # All interactive fields will show an indicator on input.
@@ -126,7 +129,6 @@ FieldWrapper = React.createClass
         @props.setMessage message
 
     @hideError()
-    @setState {value}
     @props.onChange value
 
   onFocus: -> @hideError()
@@ -137,8 +139,8 @@ FieldWrapper = React.createClass
     if @state.value and not @props.fieldData.interactive
       @validate @state.value
 
-  validate: (value) ->
-    validate.validateField @props.fieldData, value, (message) =>
+  validate: ->
+    validate.validateField @props.fieldData, @state.value, (message) =>
       # All interactive fields will show an indicator on input.
       @setState showIndicator: true, invalid: message?
       @props.setMessage message

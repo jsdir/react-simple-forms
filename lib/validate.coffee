@@ -41,7 +41,7 @@ validateField = (fieldData, value, cb) ->
 
   # Validate individual rule groups synchronously.
   async.eachSeries rules, (group, cb) =>
-    validateRuleGroup group, display, value, cb
+    validateRuleGroup group, displayName, value, cb
   , cb
 
 ###*
