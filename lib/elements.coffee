@@ -13,14 +13,15 @@ Field = React.createClass
     value: React.PropTypes.any
 
   contextTypes:
+    messages: React.PropTypes.object
     onChange: React.PropTypes.func
-    setMessage: React.PropTypes.func
     schema: React.PropTypes.object
+    setMessage: React.PropTypes.func
 
   getInitialState: ->
-    value: @props.value
     invalid: false
     showIndicator: false
+    value: @props.value
 
   getFieldSchema: ->
     @context.schema[@props.name]
@@ -45,6 +46,7 @@ Field = React.createClass
     validate.validateField
       name: @props.name
       schema: @getFieldSchema()
+      messages: @context.messages
     , value, (message) =>
       # All interactive fields will show an indicator on input.
       @setState showIndicator: true, invalid: message?

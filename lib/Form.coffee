@@ -7,22 +7,24 @@ Form = React.createClass
   displayName: "Form"
 
   propTypes:
-    schema: React.PropTypes.object.isRequired
-    messages: React.PropTypes.object
     components: React.PropTypes.func.isRequired
+    messages: React.PropTypes.object
     onSubmit: React.PropTypes.func
+    schema: React.PropTypes.object.isRequired
 
   childContextTypes: ->
-    submit: React.PropTypes.func
-    schema: React.PropTypes.object
+    messages: React.PropTypes.object
     onChange: React.PropTypes.func
+    schema: React.PropTypes.object
     setMessage: React.PropTypes.func
+    submit: React.PropTypes.func
 
   getChildContext: ->
-    submit: @submit
-    schema: @props.schema
+    messages: @props.messages
     onChange: @onFieldChange
+    schema: @props.schema
     setMessage: @setFieldMessage
+    submit: @submit
 
   getInitialState: ->
     showMessage: false

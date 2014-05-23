@@ -5,7 +5,10 @@ async = require "async"
  * Validates rules within a rule group asynchronously. This will stop
  * validating on first validation failure or error.
 ###
-validateRuleGroup = (group, displayName, value, cb) ->
+validateRuleGroup = (group, options, value, cb) ->
+  displayName = options.displayName
+  messages = options.messages
+
   async.each _.keys(group), (ruleName, cb) ->
     param = group[ruleName]
     if _.isFunction param
@@ -19,7 +22,7 @@ validateRuleGroup = (group, displayName, value, cb) ->
       # Validators from the valids library don't throw validation errors.
       # Only failures are passed. Since failures also need to stop the
       # asynchronous iteration, the message will be passed as an error.
-      message = valids[name] displayName, value, param, @options.messages[name]
+      message = valids[name] displayName, value, param, messages?[name]
       if message then cb {message} else cb()
   , cb
 
@@ -42,7 +45,10 @@ validateField = (fieldData, value, cb) ->
 
   # Validate individual rule groups synchronously.
   async.eachSeries rules, (group, cb) =>
-    validateRuleGroup group, displayName, value, cb
+    validateRuleGroup group,
+      displayName: displayName
+      messages: fieldData.messages
+    , value, cb
   , cb
 
 ###*
