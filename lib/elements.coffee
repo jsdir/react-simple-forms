@@ -24,7 +24,11 @@ Field = React.createClass
     value: @props.value
 
   getFieldSchema: ->
-    @context.schema[@props.name]
+    if @props.name of @context.schema
+      return @context.schema[@props.name]
+    else
+      throw new Error "A field with name \"#{@props.name}\" does not exist " +
+        "in the schema."
 
   onChange: (value) ->
     @hideError()
@@ -100,5 +104,7 @@ Submit = React.createClass
     else
       childProps.onClick = ->
         @context.submit()
+
+    return @props.children
 
 module.exports = {Field, Message, Submit}

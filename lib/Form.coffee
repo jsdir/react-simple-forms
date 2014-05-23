@@ -55,4 +55,4 @@ Form = React.createClass
 
   render: -> @props.components()
 
-module.exports = {Form}
+module.exports = Form
