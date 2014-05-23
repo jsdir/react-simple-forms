@@ -4,7 +4,8 @@
   "description": "Simple forms for react. Loosely based on react-forms.",
   "main": "index.js",
   "dependencies": {
-    "lodash": "~2.4.1"
+    "lodash": "~2.4.1",
+    "async": "~0.9.0"
   },
   "peerDependencies": {
     "react": "^0.10.0",
@@ -19,7 +20,9 @@
     "url": "git://github.com/jsdir/react-simple-forms.git"
   },
   "browserify": {
-    "transform": ["coffeeify"]
+    "transform": [
+      "coffeeify"
+    ]
   },
   "keywords": [
     "react",

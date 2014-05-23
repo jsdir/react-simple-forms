@@ -1,4 +1,5 @@
 _ = require "lodash"
+async = require "async"
 
 ###*
  * Validates rules within a rule group asynchronously. This will stop
