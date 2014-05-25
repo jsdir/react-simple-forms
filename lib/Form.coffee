@@ -8,6 +8,7 @@ Form = React.createClass
 
   propTypes:
     components: React.PropTypes.func.isRequired
+    data: React.PropTypes.object
     messages: React.PropTypes.object
     onSubmit: React.PropTypes.func
     schema: React.PropTypes.object.isRequired
@@ -20,6 +21,7 @@ Form = React.createClass
     submit: React.PropTypes.func
 
   getChildContext: ->
+    data: @props.data
     messages: @props.messages
     onChange: @onFieldChange
     schema: @props.schema
@@ -27,8 +29,9 @@ Form = React.createClass
     submit: @submit
 
   getInitialState: ->
-    showMessage: false
+    data: @props.data
     message: ""
+    showMessage: false
 
   onFieldChange: (field, value) ->
     @setState showMessage: false
@@ -53,6 +56,6 @@ Form = React.createClass
       else
         @setState showMessage: false
 
-  render: -> @props.components()
+  render: -> @transferPropsTo @props.components()
 
 module.exports = Form

@@ -10,9 +10,10 @@ Field = React.createClass
 
   propTypes:
     name: React.PropTypes.string.isRequired
-    value: React.PropTypes.any
 
   contextTypes:
+    defaults: React.PropTypes.object.isRequired
+    initialValues: React.PropTypes.object
     messages: React.PropTypes.object
     onChange: React.PropTypes.func
     schema: React.PropTypes.object
@@ -21,7 +22,7 @@ Field = React.createClass
   getInitialState: ->
     invalid: false
     showIndicator: false
-    value: @props.value
+    value: @context.defaults?[@props.name]
 
   getFieldSchema: ->
     if @props.name of @context.schema
@@ -75,7 +76,7 @@ Message = React.createClass
   displayName: "FormMessage"
 
   propTypes:
-    message: React.PropTypes.string.isRequired
+    message: React.PropTypes.string
 
   render: ->
     React.DOM.div className: "error-message", @props.message
@@ -94,15 +95,17 @@ Submit = React.createClass
 
   render: ->
     childProps = @props.children.props
+
     if childProps.onClick
       # Run any existing onClick handler even through we are overriding the
       # handler.
       existingHandler = childProps.onClick
-      childProps.onClick = ->
+      childProps.onClick = =>
         existingHandler()
         @context.submit()
     else
-      childProps.onClick = ->
+      childProps.onClick = =>
+        console.log "what"
         @context.submit()
 
     return @props.children

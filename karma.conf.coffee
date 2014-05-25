@@ -2,7 +2,7 @@ module.exports = (config) ->
   config.set
     basePath: ""
 
-    frameworks: ["mocha", "chai", "browserify"]
+    frameworks: ["browserify", "mocha", "chai"]
     files: ["node_modules/es5-shim/es5-shim.js"]
 
     reporters: ["spec"]
@@ -20,9 +20,8 @@ module.exports = (config) ->
 
     browserify:
       debug: true
-      files: ["test/*.coffee"]
+      files: ["test/index.coffee"]
       extensions: [".coffee"]
-      noParse: ["lodash", "react"]
 
     preprocessors:
       "/**/*.browserify": "browserify"

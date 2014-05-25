@@ -1,27 +1,31 @@
 React = require "react"
 ReactTestUtils = require "react/lib/ReactTestUtils"
 
-Forms = require ".."
+forms = require "../index"
 
 describe "Forms", ->
   it "should work", ->
 
     schema =
       "email":
-        input: Forms.inputs.MultilineInput
+        input: forms.inputs.MultilineInput
       "password": {}
 
-    form = Forms.Form
+    form = forms.Form
       schema: schema
       messages: {}
       onSubmit: @submit
       components: -> React.DOM.div null,
-        Forms.Message message: "hello world"
-        Forms.Field name: "email"
+        forms.Message message: "hello world"
+        forms.Field name: "email"
         React.DOM.div className: "special-field",
-          Forms.Field name: "password"
-          Forms.Submit null,
+          forms.Field name: "password"
+          forms.Submit null,
             React.DOM.button null, "Submit"
 
     instance = ReactTestUtils.renderIntoDocument form
     console.log instance.getDOMNode()
+
+  it "should use the enter key as tab if not focused on the last input"
+
+  it "should use the enter key to submit if focused on the last input"

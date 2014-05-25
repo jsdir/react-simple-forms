@@ -3,7 +3,7 @@ React = require "react"
 
 {div, input, textarea, select, option} = React.DOM
 
-StringInput = React.createClass
+TextInput = React.createClass
   displayName: "StringInput"
   render: -> @transferPropsTo input()
 
@@ -11,7 +11,7 @@ PasswordInput = React.createClass
   displayName: "PasswordInput"
   render: -> @transferPropsTo input type: "password"
 
-MultilineInput = React.createClass
+TextareaInput = React.createClass
   displayName: "MultilineInput"
   render: -> @transferPropsTo textarea()
 
@@ -104,9 +104,9 @@ ChoiceSelector = React.createClass
       , @props.choices[choice]
 
 module.exports = {
-  StringInput
+  TextInput
   PasswordInput
-  MultilineInput
+  TextareaInput
 
   # A Selector is an Input for predefined values.
   DateSelector
