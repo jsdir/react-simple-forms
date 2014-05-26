@@ -3,7 +3,11 @@ module.exports = (config) ->
     basePath: ""
 
     frameworks: ["browserify", "mocha", "sinon-chai"]
-    files: ["node_modules/es5-shim/es5-shim.js"]
+    files: [
+      "node_modules/es5-shim/es5-shim.js"
+      {pattern: "*.coffee", included: false, served: false}
+      {pattern: "lib/**/*.coffee", included: false, served: false}
+    ]
 
     reporters: ["spec"]
 
