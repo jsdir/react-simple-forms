@@ -24,8 +24,9 @@ Field = React.createClass
     showIndicator: false
     value: @context.defaults?[@props.name]
 
-  componentWillMount: ->
-    @validate @state.value
+  componentDidMount: ->
+    # Only validate initially when a default value is present.
+    @validate @state.value if @state.value
 
   getFieldSchema: ->
     if @props.name of @context.schema
@@ -35,6 +36,7 @@ Field = React.createClass
         "in the schema."
 
   onChange: (value) ->
+    console.log 12241
     @hideError()
     @setState {value}
     @validate value if @getFieldSchema().interactive
@@ -63,8 +65,7 @@ Field = React.createClass
 
   render: ->
     # Default to StringInput if no Input was given in the schema.
-    input = @getFieldSchema().input or inputs.StringInput
-
+    input = @getFieldSchema().input or inputs.TextInput
     return input
       value: @state.value
       onChange: @onChange

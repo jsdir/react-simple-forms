@@ -5,11 +5,10 @@ forms = require "../index"
 
 describe "Forms", ->
   it "should work", ->
-
     schema =
-      "email":
+      email:
         input: forms.inputs.MultilineInput
-      "password": {}
+      password: {}
 
     form = forms.Form
       schema: schema

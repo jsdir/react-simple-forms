@@ -14,6 +14,9 @@ Input =
     invalid: React.PropTypes.bool
     showIndicator: React.PropTypes.bool
 
+  getInitialState: ->
+    showIndicator: @props.showIndicator
+
 InputElement =
   onChange: (e) ->
     @props.onChange e.target.value
@@ -25,13 +28,15 @@ InputElement =
       return ReactCSSTransitionGroup transitionName: "fade", indicator
 
 TextInput = React.createClass
-  displayName: "StringInput"
+  displayName: "TextInput"
   mixins: [Input, InputElement]
 
   render: ->
     div null,
-      @transferPropsTo input onChange: @onChange, className: cx
-        "error": @props.invalid
+      @transferPropsTo input
+        onChange: @onChange
+        className: cx
+          "error": @props.invalid
       @renderIndicator()
 
 PasswordInput = React.createClass
