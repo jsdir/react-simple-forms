@@ -1,5 +1,6 @@
 _ = require "lodash"
 async = require "async"
+valids = require "valids"
 
 ###*
  * Validates rules within a rule group asynchronously. This will stop
@@ -22,8 +23,8 @@ validateRuleGroup = (group, options, value, cb) ->
       # Validators from the valids library don't throw validation errors.
       # Only failures are passed. Since failures also need to stop the
       # asynchronous iteration, the message will be passed as an error.
-      message = valids[name] displayName, value, param, messages?[name]
-      if message then cb {message} else cb()
+      message = valids[ruleName] displayName, value, param, messages?[ruleName]
+      if message then cb message else cb()
   , cb
 
 ###*
@@ -61,8 +62,11 @@ validateAll = (formData, data, cb) ->
   # Validate fields asynchronously. Do not stop on any validation failures.
   fieldNames = _.keys formData.schema
   async.each fieldNames, (fieldName, cb) ->
-    fieldSchema = schema[fieldName]
-    validateField fieldName, fieldSchema, data[fieldName], (err) ->
+    fieldSchema = formData.schema[fieldName]
+    fieldData =
+      schema: fieldSchema
+      name: fieldName
+    validateField fieldData, data[fieldName], (err) ->
       errorMessage = err.message or err.err
       if errorMessage
         valid = false

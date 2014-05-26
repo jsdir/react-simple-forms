@@ -107,7 +107,7 @@ describe "Field", ->
     # should show indicator. should not show error formatting
     # this is the only instance in which the failing indicator will be shown
 
-  xit "should hide error formatting and indicators on focus or input", (done) ->
+  xit "should hide error formatting and indicators on input", (done) ->
 
 
   xit "should validate non-interactive fields on blur", (done) ->

@@ -1,4 +1,5 @@
 React = require "react"
+cx = require "react/lib/cx"
 
 inputs = require "./inputs"
 validate = require "./validate"
@@ -36,7 +37,6 @@ Field = React.createClass
         "in the schema."
 
   onChange: (value) ->
-    console.log 12241
     @hideError()
     @setState {value}
     @validate value if @getFieldSchema().interactive
@@ -61,12 +61,14 @@ Field = React.createClass
     , value, (message) =>
       # All interactive fields will show an indicator on input.
       @setState showIndicator: true, invalid: message?
-      @context.setMessage @props.name, message
+      @context.setValidationResult @props.name, message
 
   render: ->
     # Default to StringInput if no Input was given in the schema.
-    input = @getFieldSchema().input or inputs.TextInput
+    fieldSchema = @getFieldSchema()
+    input = fieldSchema.input or inputs.TextInput
     return input
+      placeholder: fieldSchema.placeholder
       value: @state.value
       onChange: @onChange
       onFocus: @onFocus
@@ -80,11 +82,12 @@ Field = React.createClass
 Message = React.createClass
   displayName: "FormMessage"
 
-  propTypes:
+  contextTypes:
     message: React.PropTypes.string
 
   render: ->
-    React.DOM.div className: "error-message", @props.message
+    className = cx "error-message": @context.message?
+    React.DOM.div {className}, @context.message
 
 ###*
  * Wraps a submit button or anything with an onClick callback.
@@ -106,10 +109,12 @@ Submit = React.createClass
       # handler.
       existingHandler = childProps.onClick
       childProps.onClick = =>
+        console.log "wo"
         existingHandler()
         @context.submit()
     else
       childProps.onClick = =>
+        console.log "asdasd"
         @context.submit()
 
     return @props.children

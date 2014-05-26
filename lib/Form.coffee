@@ -3,7 +3,7 @@ React = require "react"
 elements = require "./elements"
 validate = require "./validate"
 
-update = React
+update = require "react/lib/update"
 
 Form = React.createClass
   displayName: "Form"
@@ -19,6 +19,7 @@ Form = React.createClass
   childContextTypes:
     defaults: React.PropTypes.object
     messages: React.PropTypes.object
+    message: React.PropTypes.string
     onChange: React.PropTypes.func
     schema: React.PropTypes.object
     setValidationResult: React.PropTypes.func
@@ -27,6 +28,7 @@ Form = React.createClass
   getChildContext: ->
     defaults: @props.defaults
     messages: @props.messages
+    message: @state.message
     onChange: @onFieldChange
     schema: @props.schema
     setValidationResult: @setValidationResult
@@ -34,23 +36,24 @@ Form = React.createClass
 
   getInitialState: ->
     data: {} # Representation of all values of all fields in the form.
-    validFields: {}
+    invalidFields: {}
     message: null
 
   onFieldChange: (field, value) ->
     pair = {}
     pair[field] = value
-    data = update @state.data, pair
+    data = update @state.data, "$set": pair
     @setState {message: null, data}
 
   setValidationResult: (field, message) ->
-    pair = {}
-    pair[field] = not message?
-
-    # The validation failed.
-    if message then @setState {message}
-
-    @setState {message: null, data}
+    if message
+      # The validation failed.
+      @setState {message}
+    else
+      pair = {}
+      pair[field] = message?
+      data = update @state.invalidFields, "$set": pair
+      @setState {message: null, data}
 
   submit: ->
     # Interactive fields have shown validity through the cumulative results
@@ -60,7 +63,7 @@ Form = React.createClass
       messages: @props.messages
 
     # validateAll should exclude setFieldMessage aggregates.
-    validate.validateAll fieldsData, @state.data, (message) ->
+    validate.validateAll fieldsData, @state.data, (message) =>
       # dupe
       if message
         @setState {showMessage: true, message}
