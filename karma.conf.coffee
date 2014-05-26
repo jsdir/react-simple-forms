@@ -2,7 +2,7 @@ module.exports = (config) ->
   config.set
     basePath: ""
 
-    frameworks: ["browserify", "mocha", "chai"]
+    frameworks: ["browserify", "mocha", "sinon-chai"]
     files: ["node_modules/es5-shim/es5-shim.js"]
 
     reporters: ["spec"]

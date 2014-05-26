@@ -1,19 +1,61 @@
 _ = require "lodash"
 React = require "react"
+cx = require "react/lib/cx"
+ReactCSSTransitionGroup = require "react/lib/ReactCSSTransitionGroup"
 
-{div, input, textarea, select, option} = React.DOM
+{div, input, textarea, select, option, i} = React.DOM
+
+Input =
+  propTypes:
+    value: React.PropTypes.any
+    onChange: React.PropTypes.func
+    onFocus: React.PropTypes.func
+    onBlur: React.PropTypes.func
+    invalid: React.PropTypes.bool
+    showIndicator: React.PropTypes.bool
+
+InputElement =
+  onChange: (e) ->
+    @props.onChange e.target.value
+
+  renderIndicator: ->
+    if @state.showIndicator
+      iconClass = if @state.invalid then "fa-times" else "fa-check"
+      indicator = i className: "fa #{iconClass}"
+      return ReactCSSTransitionGroup transitionName: "fade", indicator
 
 TextInput = React.createClass
   displayName: "StringInput"
-  render: -> @transferPropsTo input()
+  mixins: [Input, InputElement]
+
+  render: ->
+    div null,
+      @transferPropsTo input onChange: @onChange, className: cx
+        "error": @props.invalid
+      @renderIndicator()
 
 PasswordInput = React.createClass
   displayName: "PasswordInput"
-  render: -> @transferPropsTo input type: "password"
+  mixins: [Input, InputElement]
+
+  render: ->
+    div null,
+      @transferPropsTo input
+        type: "password"
+        onChange: @onChange
+        className: cx "error": @props.invalid
+      @renderIndicator()
 
 TextareaInput = React.createClass
   displayName: "MultilineInput"
-  render: -> @transferPropsTo textarea()
+  mixins: [Input]
+
+  onChange: (e) ->
+    @props.onChange e.target.value
+
+  render: -> @transferPropsTo textarea
+    onChange: @onChange
+    className: cx "error": @props.invalid
 
 monthNames = ["January", "February", "March", "April", "May", "June", "July",
   "August", "September", "October", "November", "December"]
@@ -25,6 +67,7 @@ daysInMonth: (month, year) -> new Date(year, month, 0).getDate()
 
 DateSelector = React.createClass
   displayName: "DateSelector"
+  mixins: [Input]
 
   getInitialState: ->
     date: new Date()
@@ -83,6 +126,7 @@ DateSelector = React.createClass
 
 ChoiceSelector = React.createClass
   displayName: "ChoiceSelector"
+  mixins: [Input]
 
   propTypes:
     choices: React.PropTypes.object

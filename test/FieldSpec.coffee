@@ -1,10 +1,9 @@
 React = require "react"
 TestUtils = require "react/lib/ReactTestUtils"
-chai = require "chai"
 
+validate = require "../lib/validate"
+validateField = sinon.stub validate, "validateField"
 forms = require "../index"
-
-expect = chai.expect
 
 TestInput = React.createClass
   displayName: "TestInput"
@@ -17,6 +16,12 @@ describe.only "Field", ->
     schema:
       field:
         input: TestInput
+
+  afterEach ->
+    validateField.reset()
+
+  after ->
+    validateField.restore()
 
   it "should require its name to be registered in the schema", (done) ->
     context = createContext()
@@ -47,14 +52,26 @@ describe.only "Field", ->
 
   it "should run #context.onChange() when the input changes", (done) ->
     context = createContext()
-    context.onChange = -> done()
+
+    context.onChange = (field, value) ->
+      field.should.equal "field"
+      value.should.equal "changedInput"
+      done()
+
     context.schema.field.input = forms.inputs.TextInput
     React.withContext context, ->
-      field = forms.Field value: "default", name: "field"
+      field = forms.Field name: "field"
       instance = TestUtils.renderIntoDocument field
-      TestUtils.Simulate.change instance.getDOMNode()
+      e = target: value: "changedInput"
+      TestUtils.Simulate.change instance.getDOMNode(), e
 
-  xit "should initially validate defaults inherited from context"
+  xit "should initially validate defaults inherited from context", (done) ->
+    context = createContext()
+    context.defaults.field = "contextDefault"
+    React.withContext context, =>
+      field = forms.Field name: "field"
+      #validateField.should.have.been.calledOnce
+      done()
     # Assert validate is called.
 
   xit "should not initially validate if no default is present"

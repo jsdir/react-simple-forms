@@ -24,7 +24,6 @@ describe "Forms", ->
             React.DOM.button null, "Submit"
 
     instance = ReactTestUtils.renderIntoDocument form
-    console.log instance.getDOMNode()
 
   it "should use the enter key as tab if not focused on the last input"
 

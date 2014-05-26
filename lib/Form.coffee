@@ -3,42 +3,54 @@ React = require "react"
 elements = require "./elements"
 validate = require "./validate"
 
+update = React
+
 Form = React.createClass
   displayName: "Form"
 
   propTypes:
-    components: React.PropTypes.func.isRequired
-    data: React.PropTypes.object
+    children: React.PropTypes.func.isRequired
+    # or components
+    defaults: React.PropTypes.object
     messages: React.PropTypes.object
     onSubmit: React.PropTypes.func
     schema: React.PropTypes.object.isRequired
 
   childContextTypes:
+    defaults: React.PropTypes.object
     messages: React.PropTypes.object
     onChange: React.PropTypes.func
     schema: React.PropTypes.object
-    setMessage: React.PropTypes.func
+    setValidationResult: React.PropTypes.func
     submit: React.PropTypes.func
 
   getChildContext: ->
-    data: @props.data
+    defaults: @props.defaults
     messages: @props.messages
     onChange: @onFieldChange
     schema: @props.schema
-    setMessage: @setFieldMessage
+    setValidationResult: @setValidationResult
     submit: @submit
 
   getInitialState: ->
-    data: @props.data
-    message: ""
-    showMessage: false
+    data: {} # Representation of all values of all fields in the form.
+    validFields: {}
+    message: null
 
   onFieldChange: (field, value) ->
-    @setState showMessage: false
-    #@setState data.field: value
+    pair = {}
+    pair[field] = value
+    data = update @state.data, pair
+    @setState {message: null, data}
 
-  setFieldMessage: (field, message) ->
-    @setState {showMessage: true, message}
+  setValidationResult: (field, message) ->
+    pair = {}
+    pair[field] = not message?
+
+    # The validation failed.
+    if message then @setState {message}
+
+    @setState {message: null, data}
 
   submit: ->
     # Interactive fields have shown validity through the cumulative results

@@ -1,28 +1,31 @@
 React = require "react"
 
 inputs = require "./inputs"
+validate = require "./validate"
 
 ###*
  * A component for a form field.
 ###
 Field = React.createClass
-  displayName: "FieldWrapper"
+  displayName: "Field"
 
   propTypes:
     name: React.PropTypes.string.isRequired
 
   contextTypes:
-    defaults: React.PropTypes.object.isRequired
-    initialValues: React.PropTypes.object
-    messages: React.PropTypes.object
+    defaults: React.PropTypes.object
     onChange: React.PropTypes.func
+    messages: React.PropTypes.object
     schema: React.PropTypes.object
-    setMessage: React.PropTypes.func
+    setValidationResult: React.PropTypes.func
 
   getInitialState: ->
     invalid: false
     showIndicator: false
     value: @context.defaults?[@props.name]
+
+  componentWillMount: ->
+    @validate @state.value
 
   getFieldSchema: ->
     if @props.name of @context.schema
@@ -44,6 +47,7 @@ Field = React.createClass
     @setState showIndicator: false, invalid: false
 
   onBlur: ->
+    # Validate non-empty, non-interactive fields on blur.
     if @state.value and not @getFieldSchema().interactive
       @validate @state.value
 
@@ -105,7 +109,6 @@ Submit = React.createClass
         @context.submit()
     else
       childProps.onClick = =>
-        console.log "what"
         @context.submit()
 
     return @props.children
