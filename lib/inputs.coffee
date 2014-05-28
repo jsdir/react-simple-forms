@@ -11,8 +11,7 @@ Input =
     onChange: React.PropTypes.func
     onFocus: React.PropTypes.func
     onBlur: React.PropTypes.func
-    invalid: React.PropTypes.bool
-    showIndicator: React.PropTypes.bool
+    fieldState: React.PropTypes.string
 
   getInitialState: ->
     showIndicator: @props.showIndicator
@@ -22,8 +21,14 @@ InputElement =
     @props.onChange e.target.value
 
   renderIndicator: ->
-    if @state.showIndicator
-      iconClass = if @state.invalid then "fa-times" else "fa-check"
+    className = null
+
+    if @props.fieldState is "invalidInteractive"
+      iconClass = "fa-times"
+    else if @props.fieldState is "valid"
+      iconClass = "fa-check"
+
+    if iconClass
       indicator = i className: "fa #{iconClass}"
       return ReactCSSTransitionGroup transitionName: "fade", indicator
 
@@ -36,7 +41,7 @@ TextInput = React.createClass
       @transferPropsTo input
         onChange: @onChange
         className: cx
-          "error": @props.invalid
+          "error": @props.fieldState is "invalid"
       @renderIndicator()
 
 PasswordInput = React.createClass
@@ -48,7 +53,8 @@ PasswordInput = React.createClass
       @transferPropsTo input
         type: "password"
         onChange: @onChange
-        className: cx "error": @props.invalid
+        className: cx
+          "error": @props.fieldState is "invalid"
       @renderIndicator()
 
 TextareaInput = React.createClass

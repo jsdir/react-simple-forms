@@ -15,19 +15,17 @@ Field = React.createClass
 
   contextTypes:
     defaults: React.PropTypes.object
-    onChange: React.PropTypes.func
-    messages: React.PropTypes.object
-    schema: React.PropTypes.object
-    setValidationResult: React.PropTypes.func
+    hideError: React.PropTypes.func.isRequired
+    fieldStates: React.PropTypes.object.isRequired
+    onChange: React.PropTypes.func.isRequired
+    schema: React.PropTypes.object.isRequired
+    blurValidate: React.PropTypes.func.isRequired
 
   getInitialState: ->
-    invalid: false
-    showIndicator: false
     value: @context.defaults?[@props.name]
 
-  componentDidMount: ->
-    # Only validate initially when a default value is present.
-    @validate @state.value if @state.value
+  getFieldState: ->
+    @context.fieldStates[@props.name] or "default"
 
   getFieldSchema: ->
     if @props.name of @context.schema
@@ -37,44 +35,26 @@ Field = React.createClass
         "in the schema."
 
   onChange: (value) ->
-    @hideError()
-    @setState {value}
-    @validate value if @getFieldSchema().interactive
     @context.onChange @props.name, value
 
   onFocus: ->
-    @hideError()
-
-  hideError: ->
-    @setState showIndicator: false, invalid: false
+    @context.hideError @props.name
 
   onBlur: ->
-    # Validate non-empty, non-interactive fields on blur.
-    if @state.value and not @getFieldSchema().interactive
-      @validate @state.value
-
-  validate: (value) ->
-    validate.validateField
-      name: @props.name
-      schema: @getFieldSchema()
-      messages: @context.messages
-    , value, (message) =>
-      # All interactive fields will show an indicator on input.
-      @setState showIndicator: true, invalid: message?
-      @context.setValidationResult @props.name, message
+    @context.blurValidate @props.name
 
   render: ->
     # Default to StringInput if no Input was given in the schema.
     fieldSchema = @getFieldSchema()
     input = fieldSchema.input or inputs.TextInput
+
     return input
       placeholder: fieldSchema.placeholder
       value: @state.value
       onChange: @onChange
       onFocus: @onFocus
       onBlur: @onBlur
-      invalid: @state.invalid
-      showIndicator: @state.showIndicator
+      fieldState: @getFieldState()
 
 ###*
  * Shows an error message on validation error or failure.
@@ -109,12 +89,10 @@ Submit = React.createClass
       # handler.
       existingHandler = childProps.onClick
       childProps.onClick = =>
-        console.log "wo"
         existingHandler()
         @context.submit()
     else
       childProps.onClick = =>
-        console.log "asdasd"
         @context.submit()
 
     return @props.children

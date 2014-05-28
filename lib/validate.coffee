@@ -10,15 +10,14 @@ validateRuleGroup = (group, options, value, cb) ->
   displayName = options.displayName
   messages = options.messages
 
-  async.each _.keys(group), (ruleName, cb) ->
+  async.eachSeries _.keys(group), (ruleName, cb) ->
     param = group[ruleName]
     if _.isFunction param
       # cb(err, message)
       param value, (err, message) ->
         # Treat validation errors and normal failures as errors since they
-        # need to stop the asynchronous iteration immediately. We use a hash to
-        # maintain distinction for other functions.
-        cb {err, message}
+        # need to stop the asynchronous iteration immediately.
+        cb err or message
     else
       # Validators from the valids library don't throw validation errors.
       # Only failures are passed. Since failures also need to stop the
@@ -60,17 +59,16 @@ validateAll = (formData, data, cb) ->
   messages = {}
 
   # Validate fields asynchronously. Do not stop on any validation failures.
-  fieldNames = _.keys formData.schema
+  fieldNames = _.keys data
   async.each fieldNames, (fieldName, cb) ->
     fieldSchema = formData.schema[fieldName]
     fieldData =
       schema: fieldSchema
       name: fieldName
-    validateField fieldData, data[fieldName], (err) ->
-      errorMessage = err.message or err.err
-      if errorMessage
+    validateField fieldData, data[fieldName], (message) ->
+      if message
         valid = false
-        messages[fieldName] = errorMessage
+        messages[fieldName] = message
       cb()
   , ->
     if valid
@@ -79,7 +77,4 @@ validateAll = (formData, data, cb) ->
       messageField = _.first _.intersection fieldNames, _.keys messages
       cb messages, data, messages[messageField]
 
-module.exports = {
-  validateField
-  validateAll
-}
+module.exports = {validateAll}
