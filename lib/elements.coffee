@@ -4,6 +4,8 @@ cx = require "react/lib/cx"
 inputs = require "./inputs"
 validate = require "./validate"
 
+keys = esc: 13
+
 ###*
  * A component for a form field.
 ###
@@ -15,11 +17,13 @@ Field = React.createClass
 
   contextTypes:
     defaults: React.PropTypes.object
-    hideError: React.PropTypes.func.isRequired
+    onFocus: React.PropTypes.func.isRequired
     fieldStates: React.PropTypes.object.isRequired
     onChange: React.PropTypes.func.isRequired
     schema: React.PropTypes.object.isRequired
     blurValidate: React.PropTypes.func.isRequired
+    enterDown: React.PropTypes.func
+    focused: React.PropTypes.string
 
   getInitialState: ->
     value: @context.defaults?[@props.name]
@@ -38,10 +42,14 @@ Field = React.createClass
     @context.onChange @props.name, value
 
   onFocus: ->
-    @context.hideError @props.name
+    @context.onFocus @props.name
 
   onBlur: ->
     @context.blurValidate @props.name
+
+  onKeyDown: (e) ->
+    if e.keyCode is keys.esc
+      @context.enterDown @props.name
 
   render: ->
     # Default to StringInput if no Input was given in the schema.
@@ -54,7 +62,9 @@ Field = React.createClass
       onChange: @onChange
       onFocus: @onFocus
       onBlur: @onBlur
+      onKeyDown: @onKeyDown
       fieldState: @getFieldState()
+      focus: @context.focused is @props.name
 
 ###*
  * Shows an error message on validation error or failure.

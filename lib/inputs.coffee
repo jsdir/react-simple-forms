@@ -28,18 +28,34 @@ InputElement =
     else if @props.fieldState is "valid"
       iconClass = "fa-check"
 
+    indicator = []
     if iconClass
-      indicator = i className: "fa #{iconClass}"
-      return ReactCSSTransitionGroup transitionName: "fade", indicator
+      indicator = i className: "form-field-indicator fa #{iconClass}"
+
+    return ReactCSSTransitionGroup transitionName: "fade", indicator
 
 TextInput = React.createClass
   displayName: "TextInput"
   mixins: [Input, InputElement]
 
+  propTypes:
+    focus: React.PropTypes.bool
+
+  componentDidMount: ->
+    @focus()
+
+  componentDidUpdate: ->
+    @focus()
+
+  focus: ->
+    if @props.focus
+      @refs.input.getDOMNode().focus()
+
   render: ->
-    div null,
+    div className: "form-field",
       @transferPropsTo input
         onChange: @onChange
+        ref: "input"
         className: cx
           "error": @props.fieldState is "invalid"
       @renderIndicator()
@@ -48,11 +64,25 @@ PasswordInput = React.createClass
   displayName: "PasswordInput"
   mixins: [Input, InputElement]
 
+  propTypes:
+    focus: React.PropTypes.bool
+
+  componentDidMount: ->
+    @focus()
+
+  componentDidUpdate: ->
+    @focus()
+
+  focus: ->
+    if @props.focus
+      @refs.input.getDOMNode().focus()
+
   render: ->
-    div null,
+    div className: "form-field", ref: "input",
       @transferPropsTo input
         type: "password"
         onChange: @onChange
+        ref: "input"
         className: cx
           "error": @props.fieldState is "invalid"
       @renderIndicator()

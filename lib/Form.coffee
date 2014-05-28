@@ -20,35 +20,48 @@ Form = React.createClass
 
   childContextTypes:
     defaults: React.PropTypes.object
-    hideError: React.PropTypes.func
+    onFocus: React.PropTypes.func
     fieldStates: React.PropTypes.object
     onChange: React.PropTypes.func
     schema: React.PropTypes.object
     blurValidate: React.PropTypes.func
     submit: React.PropTypes.func
     message: React.PropTypes.string
+    enterDown: React.PropTypes.func
+    focused: React.PropTypes.string
 
   getChildContext: ->
     defaults: @props.defaults
-    hideError: @hideError
+    onFocus: @onFocus
     fieldStates: @state.fieldStates
     onChange: @onFieldChange
     schema: @props.schema
     blurValidate: @blurValidate
     submit: @submit
     message: @state.message
+    enterDown: @enterDown
+    focused: @state.focused
 
   getInitialState: ->
     data: @props.defaults or {}
     cachedFields: {}
     fieldStates: {}
     message: null
+    focused: _.first _.keys @props.schema
 
-  hideError: (field) ->
+  enterDown: (field) ->
+    fields = _.keys @props.schema
+    index = _.indexOf fields, field
+    if index + 1 < fields.length
+      @setState focused: fields[index + 1]
+    else
+      @submit()
+
+  onFocus: (field) ->
     hash = {}
     hash[field] = "$set": "default"
     fieldStates = update @state.fieldStates, hash
-    @setState {message: null, fieldStates}
+    @setState {message: null, focused: field, fieldStates}
 
   onFieldChange: (field, value) ->
     # Change the value in data.
@@ -149,6 +162,7 @@ Form = React.createClass
       cb? messages
 
   render: ->
+    console.log "FORMRENDER"
     @transferPropsTo @props.children()
 
 module.exports = Form
