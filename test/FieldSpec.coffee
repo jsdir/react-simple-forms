@@ -2,7 +2,7 @@ React = require "react"
 TestUtils = require "react/lib/ReactTestUtils"
 
 validate = require "../lib/validate"
-validateField = sinon.stub validate, "validateField"
+#validateField = sinon.stub validate, "validateField"
 forms = require "../index"
 
 TestInput = React.createClass

@@ -3,7 +3,7 @@ ReactTestUtils = require "react/lib/ReactTestUtils"
 
 forms = require "../index"
 
-describe "Forms", ->
+describe.only "Forms", ->
   it "should work", ->
     schema =
       email:
