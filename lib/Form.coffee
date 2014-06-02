@@ -1,10 +1,9 @@
 _ = require "underscore"
 React = require "react"
+update = require "react/lib/update"
+valids = require "valids"
 
 elements = require "./elements"
-validate = require "./validate"
-
-update = require "react/lib/update"
 
 Form = React.createClass
   displayName: "Form"
@@ -87,7 +86,7 @@ Form = React.createClass
 
   validate: (data, interactive, cb) ->
     formData = schema: @props.schema, messages: @props.messages
-    validate.validateAll formData, data, (messages) =>
+    valids.validate data, formData, (messages) =>
       firstMessage = true
       state =
         cachedFields: {}
