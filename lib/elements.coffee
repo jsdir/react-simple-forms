@@ -2,7 +2,6 @@ React = require "react"
 cx = require "react/lib/cx"
 
 inputs = require "./inputs"
-validate = require "./validate"
 
 keys = esc: 13
 
