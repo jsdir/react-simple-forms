@@ -1,4 +1,4 @@
-_ = require "underscore"
+_ = require "lodash"
 React = require "react"
 update = require "react/lib/update"
 valids = require "valids"
