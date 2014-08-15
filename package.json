@@ -9,7 +9,7 @@
   },
   "peerDependencies": {
     "react": "~0.11.0",
-    "valids": "~0.1.2"
+    "valids": "~0.2.3"
   },
   "devDependencies": {
     "karma-browserifast": "~0.6.1",
