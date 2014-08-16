@@ -1,11 +1,9 @@
-Form = require "./lib/Form"
-elements = require "./lib/elements"
+form = require "./lib/form"
 inputs = require "./lib/inputs"
 
 module.exports =
-  Form: Form
+  Form: form.Form
+  Field: form.Field
+  Message: form.Message
+  Submit: form.Submit
   inputs: inputs
-
-  Field: elements.Field
-  Message: elements.Message
-  Submit: elements.Submit

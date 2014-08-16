@@ -25,7 +25,7 @@
     "karma-sinon-chai": "~0.1.6"
   },
   "scripts": {
-    "test-watch": "./node_modules/karma/bin/karma start --auto-watch --browsers Chrome --no-single-run karma.conf.coffee",
+    "watch": "./node_modules/karma/bin/karma start --auto-watch --no-single-run karma.conf.coffee",
     "test": "./node_modules/karma/bin/karma start karma.conf.coffee"
   },
   "repository": {

@@ -1,6 +1,6 @@
 form.AsyncForm
   onSubmit: (data, cb) ->
-    R.post data, (err) ->
+    request.post data, (err) ->
       if err
         cb "Failed to save the item."
       else

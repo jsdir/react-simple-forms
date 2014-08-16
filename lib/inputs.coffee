@@ -3,20 +3,36 @@ React = require "react"
 cx = require "react/lib/cx"
 ReactCSSTransitionGroup = require "react/lib/ReactCSSTransitionGroup"
 
-{div, input, textarea, select, option, i} = React.DOM
+{div, input, select, option, i} = React.DOM
+
+monthMap = _.map [
+  "January"
+  "February"
+  "March"
+  "April"
+  "May"
+  "June"
+  "July"
+  "August"
+  "September"
+  "October"
+  "November"
+  "December"
+], (month, n) -> [n, month]
+
+# Month starts with 1
+daysInMonth = (month, year) -> new Date(year, month, 0).getDate()
 
 Input =
   propTypes:
-    value: React.PropTypes.any
+    options: React.PropTypes.object
+    initialValue: React.PropTypes.any
     onChange: React.PropTypes.func
-    onFocus: React.PropTypes.func
-    onBlur: React.PropTypes.func
-    fieldState: React.PropTypes.string
+    status: React.PropTypes.string
+    # onFocus: React.PropTypes.func
+    # onBlur: React.PropTypes.func
 
-  getInitialState: ->
-    showIndicator: @props.showIndicator
-
-InputElement =
+Text =
   onChange: (e) ->
     @props.onChange e.target.value
 
@@ -28,7 +44,7 @@ InputElement =
     else if @props.fieldState is "valid"
       iconClass = "fa-check"
 
-    indicator = []
+    indicator = null
     if iconClass
       indicator = i className: "form-field-indicator fa #{iconClass}"
 
@@ -36,46 +52,33 @@ InputElement =
 
 TextInput = React.createClass
   displayName: "TextInput"
-  mixins: [Input, InputElement]
-
-  propTypes:
-    focus: React.PropTypes.bool
-
-  componentDidMount: ->
-    @focus()
-
-  componentDidUpdate: ->
-    @focus()
-
-  focus: ->
-    if @props.focus
-      @refs.input.getDOMNode().focus()
+  mixins: [Input, Text]
 
   render: ->
     div className: "form-field",
       @transferPropsTo input
         onChange: @onChange
-        ref: "input"
-        className: cx
-          "error": @props.fieldState is "invalid"
+        className: cx "error": @props.status is "invalid"
       @renderIndicator()
+
+###
+propTypes:
+  focus: React.PropTypes.bool
+
+componentDidMount: ->
+  @focus()
+
+componentDidUpdate: ->
+  @focus()
+
+focus: ->
+  if @props.focus
+    @refs.input.getDOMNode().focus()
+###
 
 PasswordInput = React.createClass
   displayName: "PasswordInput"
-  mixins: [Input, InputElement]
-
-  propTypes:
-    focus: React.PropTypes.bool
-
-  componentDidMount: ->
-    @focus()
-
-  componentDidUpdate: ->
-    @focus()
-
-  focus: ->
-    if @props.focus
-      @refs.input.getDOMNode().focus()
+  mixins: [Input, Text]
 
   render: ->
     div className: "form-field", ref: "input",
@@ -87,31 +90,31 @@ PasswordInput = React.createClass
           "error": @props.fieldState is "invalid"
       @renderIndicator()
 
-TextareaInput = React.createClass
-  displayName: "MultilineInput"
-  mixins: [Input]
+###
+  propTypes:
+    focus: React.PropTypes.bool
 
-  onChange: (e) ->
-    @props.onChange e.target.value
+  componentDidMount: ->
+    @focus()
 
-  render: -> @transferPropsTo textarea
-    onChange: @onChange
-    className: cx "error": @props.invalid
+  componentDidUpdate: ->
+    @focus()
 
-monthNames = ["January", "February", "March", "April", "May", "June", "July",
-  "August", "September", "October", "November", "December"]
-monthMap = _.map monthNames, (month, n) -> [n, month]
-currentYear = new Date().getFullYear()
+  focus: ->
+    if @props.focus
+      @refs.input.getDOMNode().focus()
+###
 
-# Month starts with 1
-daysInMonth: (month, year) -> new Date(year, month, 0).getDate()
-
-DateSelector = React.createClass
-  displayName: "DateSelector"
+DateInput = React.createClass
+  displayName: "DateInput"
   mixins: [Input]
 
   getInitialState: ->
-    date: new Date()
+    date = new Date()
+    return {
+      date
+      currentYear: date.getFullYear()
+    }
 
   onMonthChange: (month) ->
     date = @state.date
@@ -152,7 +155,7 @@ DateSelector = React.createClass
     , dayOptions
 
   renderYearSelector: ->
-    years = _.map [currentYear..1900], (year) ->
+    years = _.map [@state.currentYear..1900], (year) ->
       option value: year, year
     return select
       value: @state.date.getFullYear()
@@ -165,21 +168,20 @@ DateSelector = React.createClass
       @renderDaySelector()
       @renderYearSelector()
 
-ChoiceSelector = React.createClass
-  displayName: "ChoiceSelector"
+ChoiceInput = React.createClass
+  displayName: "ChoiceInput"
   mixins: [Input]
 
   propTypes:
-    choices: React.PropTypes.object
+    choices: React.PropTypes.array.isRequired
     default: React.PropTypes.string
-    onChange: React.PropTypes.func
 
   getInitialState: ->
-    choice: null
+    value: null
 
-  onChoiceSelect: (choice) ->
-    @setState {choice}
-    @props.onChange choice
+  onChoiceSelect: (value) ->
+    @setState {value}
+    @props.onChange value
 
   render: ->
     div className: "btn-group", _.map @props.choices, (choice) =>
@@ -191,9 +193,6 @@ ChoiceSelector = React.createClass
 module.exports = {
   TextInput
   PasswordInput
-  TextareaInput
-
-  # A Selector is an Input for predefined values.
-  DateSelector
-  ChoiceSelector
+  DateInput
+  ChoiceInput
 }
