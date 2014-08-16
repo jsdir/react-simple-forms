@@ -5,11 +5,12 @@
   "main": "index.js",
   "dependencies": {
     "lodash": "~2.4.1",
-    "async": "~0.9.0"
+    "async": "~0.9.0",
+    "valids": "~0.2.4"
   },
   "peerDependencies": {
     "react": "~0.11.0",
-    "valids": "~0.2.3"
+    "valids": "~0.2.4"
   },
   "devDependencies": {
     "karma-browserifast": "~0.6.1",

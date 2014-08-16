@@ -1,47 +1,96 @@
 React = require "react"
-TestUtils = require "react/lib/ReactTestUtils"
+ReactTestUtils = require "react/lib/ReactTestUtils"
 
-forms = require ".."
+forms = require "../index"
+
+###
+createForm = () ->
+  forms.Form
+    schema:
+      text:
+        input: forms.inputs.TextInput
+    onSubmit: ->
+###
 
 describe "Forms", ->
 
   describe "`onSubmit` callback", ->
 
-    it "should be called when the form is submitted", ->
-      @
+    it "should be called when the form is submitted", (done) ->
+      form = forms.Form
+        schema:
+          text: input: forms.inputs.TextInput
+        onSubmit: (data) ->
+          data.should.deep.eq {}
+          done()
+      , ->
+        forms.Field name: "text"
 
-  xdescribe "`onResult` callback", ->
+      c = ReactTestUtils.renderIntoDocument form
+      c.submit()
+
+  describe "`onResult` callback", ->
 
     it "should be called with messages when the form fails to validate", (done) ->
+      form = forms.Form
+        defaults:
+          text: "abc"
+        schema:
+          text:
+            input: forms.inputs.TextInput
+            rules: min: 4
+        onResult: (messages, data) ->
+          message = 'attribute "text" must have a minimum of 4 characters'
+          messages.should.deep.eq {text: message}
+          data.should.deep.eq {text: "abc"}
+          done()
+      , ->
+        forms.Field name: "text"
+
+      c = ReactTestUtils.renderIntoDocument form
+      c.submit()
 
     it "should be called with data when the form validates", (done) ->
-      describe ""
-      it "", (done) ->
-        form = forms.Form
-          schema: 1
-          onSubmit: ->
-            @
-          onResult: (messages, data) ->
-            @
+      form = forms.Form
+        defaults:
+          text: "abcd"
+        schema:
+          text:
+            input: forms.inputs.TextInput
+            rules: min: 4
+        onResult: (messages, data) ->
+          message = 'attribute "text" must have a minimum of 4 characters'
+          expect(messages).to.be.null
+          data.should.deep.eq {text: "abcd"}
+          done()
+      , ->
+        forms.Field name: "text"
 
-        instance = ReactTestUtils.renderIntoDocument form
-        instance.submit()
+      c = ReactTestUtils.renderIntoDocument form
+      c.submit()
 
   xit "should use the enter key as tab if not focused on the last input", ->
 
   xit "should use the enter key to submit if focused on the last input", ->
 
-  xit "should display messages in descendant Message components", (done) ->
+  it "should display messages in descendant Message components", (done) ->
     form = forms.Form
-      schema: name: {}
-      onResult: ->
-        @refs.message.getDOMNode().text.should.eq "error message"
+      defaults:
+        text: "abc"
+      schema:
+        text:
+          input: forms.inputs.TextInput
+          rules: min: 4
+      onResult: (messages, data) ->
+        message = ReactTestUtils.findRenderedComponentWithType c, forms.Message
+        message.getDOMNode().textContent.should.eq 'attribute "text" must have a minimum of 4 characters'
         done()
-    , -> forms.Message ref: "message"
+    , -> React.DOM.div null,
+      forms.Message()
+      forms.Field name: "text"
 
-    instance = TestUtils.renderIntoDocument form
-    console.log instance.refs.message.getDOMNode()
-    instance.submit()
+    c = ReactTestUtils.renderIntoDocument form
+    c.submit()
 
   xit "should have descendant Submit components submit the form on click", ->
     form = forms.Form
@@ -68,7 +117,20 @@ describe "Forms", ->
 
   xit "should hide messages when submitted", ->
 
-  xit "should fill fields with default values if specified", ->
+  it "should fill fields with default values if specified", (done) ->
+    form = forms.Form
+      defaults:
+        text: "abc"
+      schema:
+        text: input: forms.inputs.TextInput
+      onResult: (messages, data) ->
+        field = ReactTestUtils.findRenderedComponentWithType c, forms.Field
+        field.getDOMNode().textContent.should.eq "abc"
+        done()
+    , -> forms.Field name: "text"
+
+    c = ReactTestUtils.renderIntoDocument form
+    c.submit()
     # show indicators
 
   xit "should show indicators if requested", ->

@@ -26,15 +26,26 @@ daysInMonth = (month, year) -> new Date(year, month, 0).getDate()
 Input =
   propTypes:
     options: React.PropTypes.object
-    initialValue: React.PropTypes.any
+    value: React.PropTypes.any
     onChange: React.PropTypes.func
     status: React.PropTypes.string
-    # onFocus: React.PropTypes.func
+    onFocus: React.PropTypes.func
+    focus: React.PropTypes.bool
     # onBlur: React.PropTypes.func
 
 Text =
   onChange: (e) ->
     @props.onChange e.target.value
+
+  componentDidMount: ->
+    @focus()
+
+  componentDidUpdate: ->
+    @focus()
+
+  focus: ->
+    _.defer =>
+      @refs.input.getDOMNode().focus() if @props.focus
 
   renderIndicator: ->
     className = null
@@ -57,24 +68,12 @@ TextInput = React.createClass
   render: ->
     div className: "form-field",
       @transferPropsTo input
+        ref: "input"
+        value: @props.value
         onChange: @onChange
         className: cx "error": @props.status is "invalid"
+        placeholder: @props.options.placeholder
       @renderIndicator()
-
-###
-propTypes:
-  focus: React.PropTypes.bool
-
-componentDidMount: ->
-  @focus()
-
-componentDidUpdate: ->
-  @focus()
-
-focus: ->
-  if @props.focus
-    @refs.input.getDOMNode().focus()
-###
 
 PasswordInput = React.createClass
   displayName: "PasswordInput"
@@ -83,27 +82,12 @@ PasswordInput = React.createClass
   render: ->
     div className: "form-field", ref: "input",
       @transferPropsTo input
+        ref: "input"
         type: "password"
         onChange: @onChange
-        ref: "input"
-        className: cx
-          "error": @props.fieldState is "invalid"
+        className: cx "error": @props.fieldState is "invalid"
+        placeholder: @props.options.placeholder
       @renderIndicator()
-
-###
-  propTypes:
-    focus: React.PropTypes.bool
-
-  componentDidMount: ->
-    @focus()
-
-  componentDidUpdate: ->
-    @focus()
-
-  focus: ->
-    if @props.focus
-      @refs.input.getDOMNode().focus()
-###
 
 DateInput = React.createClass
   displayName: "DateInput"
