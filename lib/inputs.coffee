@@ -85,7 +85,7 @@ PasswordInput = React.createClass
         ref: "input"
         type: "password"
         onChange: @onChange
-        className: cx "error": @props.fieldState is "invalid"
+        className: cx "error": @props.status is "invalid"
         placeholder: @props.options.placeholder
       @renderIndicator()
 

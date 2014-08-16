@@ -60,7 +60,14 @@ Form = React.createClass
     # Change the value in data.
     data = {}
     data[field] = {$set: value}
-    @setState message: null, data: update @state.data, data
+
+    statuses = {}
+    statuses[field] = {$set: "valid"}
+
+    @setState
+      message: null
+      data: update @state.data, data
+      statuses: update @state.statuses, statuses
     @props.onInput?()
 
   onFieldFocus: (field) ->
@@ -82,7 +89,11 @@ Form = React.createClass
       schema: @props.schema
       messages: @props.messages
     , (messages) =>
-      if messages then @setState message: _.values(messages)[0]
+      if messages
+        @setState
+          message: _.values(messages)[0]
+          statuses: _.object _.map messages, (message, field) ->
+            [field, "invalid"]
       @props.onResult? messages, @state.data
 
   render: -> div null, @props.children()
