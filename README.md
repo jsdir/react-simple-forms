@@ -90,8 +90,6 @@ React.renderComponent(form, document.body);
 
 The `schema` option is passed directly to [valids](https://github.com/jsdir/valids).
 
-Any field in the schema can additionally have an `input` option. This option determines what input component to use for the field when rendering the form. If no input is specified, `forms.inputs.TextInput` is used by default.
-
 ```js
 var schema = {
   password: {
@@ -100,12 +98,20 @@ var schema = {
 };
 ```
 
-##### Available Inputs:
+##### Additional field options:
+
+###### input
+
+The `input` option determines what input component to use for the field when rendering the form. If no input is specified, `forms.inputs.TextInput` is used by default.
 
 - `forms.inputs.TextInput`
 - `forms.inputs.PasswordInput`
 - `forms.inputs.DateInput`
 - `forms.inputs.ChoiceInput`
+
+###### interactive
+
+The `interactive` option determines if the field should be validated immediately once the value changes.
 
 #### messages
 
@@ -113,8 +119,12 @@ The `messages` option is passed directly to [valids](https://github.com/jsdir/va
 
 #### onSubmit
 
-`onSubmit` is called with data before validation when the form is initially submitted.
+The `onSubmit` callback is called with data before validation when the form is initially submitted.
 
 #### onResult
 
-`onResult` is called with validation error messages and form data respectively.
+The `onResult` callback is called with validation error messages and form data respectively.
+
+#### showIndicators
+
+The `showIndicators` option determines if indicator icons should be shown on fields.
