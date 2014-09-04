@@ -40,7 +40,7 @@ var schema = {
     }
   },
   password: {
-    input: forms.inputs.PasswordInput
+    input: forms.inputs.PasswordInput,
     rules: {
       required: true,
       min: 8
@@ -49,7 +49,7 @@ var schema = {
 };
 
 var form = forms.Form({
-  schema: schema
+  schema: schema,
   onSubmit: function(data) {
     console.log('Form submitted with data: ', data);
   },
@@ -57,7 +57,7 @@ var form = forms.Form({
     if (messages) {
       console.log('Validation failed with messages: ', messages);
     } else {
-      console.log('Validation succeeded with data: ', data)
+      console.log('Validation succeeded with data: ', data);
     }
   }
 },
@@ -74,7 +74,7 @@ var form = forms.Form({
   ),
   React.DOM.div({id: 'submit-section'},
     forms.Submit(null,
-      React.DOM.button(null, 'Submit');
+      React.DOM.button(null, 'Submit')
     )
   )
 );
