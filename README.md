@@ -10,7 +10,9 @@ Simple forms for react. Loosely based on react-forms.
 Installation
 ------------
 
-`npm install react-simple-forms`
+```sh
+$ npm install react-simple-forms
+```
 
 Usage
 -----
