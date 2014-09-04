@@ -6,11 +6,10 @@
   "dependencies": {
     "lodash": "~2.4.1",
     "async": "~0.9.0",
-    "valids": "~0.2.4"
+    "valids": "~0.3.0"
   },
   "peerDependencies": {
-    "react": "~0.11.0",
-    "valids": "~0.2.4"
+    "react": "~0.11.0"
   },
   "devDependencies": {
     "karma-browserifast": "~0.6.1",
