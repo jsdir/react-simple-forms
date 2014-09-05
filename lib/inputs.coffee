@@ -31,7 +31,17 @@ Input =
     status: React.PropTypes.string
     onFocus: React.PropTypes.func
     focus: React.PropTypes.bool
-    # onBlur: React.PropTypes.func
+    valid: React.PropTypes.bool
+    showIndicators: React.PropTypes.bool
+
+  shouldRenderIndicator: ->
+    if @props.showIndicators
+      return @props.valid
+    else
+      return null
+
+  shouldRenderFormatting: ->
+    @props.valid is false # and @props.options.interactive
 
 Text =
   onChange: (e) ->
@@ -44,50 +54,46 @@ Text =
     @focus()
 
   focus: ->
-    _.defer =>
-      @refs.input.getDOMNode().focus() if @props.focus
+    _.defer => @refs.input.getDOMNode().focus() if @props.focus
 
   renderIndicator: ->
-    className = null
+    result = @shouldRenderIndicator()
 
-    if @props.fieldState is "invalidInteractive"
-      iconClass = "fa-times"
-    else if @props.fieldState is "valid"
-      iconClass = "fa-check"
-
-    indicator = null
-    if iconClass
-      indicator = i className: "form-field-indicator fa #{iconClass}"
+    if result is true
+      indicator = i className: "form-field-indicator fa fa-check"
+    else if result is false
+      indicator = i className: "form-field-indicator fa fa-times"
+    else
+      indicator = null
 
     return ReactCSSTransitionGroup transitionName: "fade", indicator
+
+  renderInput: (options) ->
+    props = _.extend {},
+      ref: "input"
+      value: @props.value
+      onChange: @onChange
+      className: cx "error": @shouldRenderFormatting()
+      placeholder: @props.options.placeholder
+    , options
+
+    return div className: "form-field",
+      @transferPropsTo input props
+      @renderIndicator()
 
 TextInput = React.createClass
   displayName: "TextInput"
   mixins: [Input, Text]
 
   render: ->
-    div className: "form-field",
-      @transferPropsTo input
-        ref: "input"
-        value: @props.value
-        onChange: @onChange
-        className: cx "error": @props.status is "invalid"
-        placeholder: @props.options.placeholder
-      @renderIndicator()
+    @renderInput()
 
 PasswordInput = React.createClass
   displayName: "PasswordInput"
   mixins: [Input, Text]
 
   render: ->
-    div className: "form-field", ref: "input",
-      @transferPropsTo input
-        ref: "input"
-        type: "password"
-        onChange: @onChange
-        className: cx "error": @props.status is "invalid"
-        placeholder: @props.options.placeholder
-      @renderIndicator()
+    @renderInput type: "password"
 
 DateInput = React.createClass
   displayName: "DateInput"

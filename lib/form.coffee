@@ -32,6 +32,7 @@ Form = React.createClass
     submit: React.PropTypes.func
     fieldOrder: React.PropTypes.array
     focused: React.PropTypes.string
+    showIndicators: React.PropTypes.bool
 
   getDefaultProps: ->
     defaults: {}
@@ -55,6 +56,7 @@ Form = React.createClass
     submit: @submit
     fieldOrder: @state.fieldOrder
     focused: @state.focused
+    showIndicators: @props.showIndicators
 
   componentDidMount: ->
     @setState focused: _.first @state.fieldOrder
@@ -65,7 +67,7 @@ Form = React.createClass
     data[field] = {$set: value}
 
     # Hide error formatting and indicators.
-    @setStatus field, "valid"
+    @setValid field, true
 
     # Validate if field is interactive
     if @isInteractive field
@@ -91,21 +93,17 @@ Form = React.createClass
     data[field] = value
     @validate data, (messages) ->
       if messages
-        if interactive
-          # only show indicator or error decorator
-          @setStatus field, "invalidInteractive"
-        else
+        @setValid field, false
+        unless interactive
           # Show the validation message.
           @showMessages messages
-          # Show error formatting and indicators.
-          @setStatus field, "invalid"
 
   isInteractive: (field) ->
     @props.schema[field].interactive
 
-  setStatus: (field, status) ->
+  setValid: (field, valid) ->
     statuses = {}
-    statuses[field] = {$set: status}
+    statuses[field] = {$set: valid}
     @setState statuses: update @state.statuses, statuses
 
   onFieldFocus: (field) ->
@@ -159,6 +157,7 @@ Field = React.createClass
     onEnterDown: React.PropTypes.func.isRequired
     fieldOrder: React.PropTypes.array.isRequired
     focused: React.PropTypes.string
+    showIndicators: React.PropTypes.bool
 
   componentDidMount: ->
     @context.fieldOrder.push @props.name
@@ -190,8 +189,9 @@ Field = React.createClass
     onChange: @onChange
     onKeyDown: @onKeyDown
     onFocus: @onFocus
-    status: @context.statuses[@props.name] or "default"
+    valid: @context.statuses[@props.name]
     focus: @props.name is @context.focused
+    showIndicators: @context.showIndicators
 
 Message = React.createClass
   displayName: "Message"
