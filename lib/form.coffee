@@ -1,6 +1,7 @@
 _ = require "lodash"
 React = require "react"
 update = require "react/lib/update"
+cloneWithProps = require "react/lib/cloneWithProps"
 cx = require "react/lib/cx"
 valids = require "valids"
 
@@ -122,7 +123,6 @@ Field = React.createClass
     unless _.isObject options
       throw new Error "A field with name \"#{@props.name}\" does not exist " +
         "in the schema."
-
     return {
       value: @context.defaults[@props.name]
       input: options.input or inputs.TextInput
@@ -168,6 +168,8 @@ Submit = React.createClass
     submit: React.PropTypes.func.isRequired
 
   render: ->
-    cloneWithProps @props.children, onClick: => @context.submit()
+    cloneWithProps @props.children, onClick: =>
+      @props.children.props.onClick?()
+      @context.submit()
 
 module.exports = {Form, Field, Message, Submit}

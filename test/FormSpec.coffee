@@ -1,17 +1,33 @@
 React = require "react"
 ReactTestUtils = require "react/lib/ReactTestUtils"
 
-forms = require "../index"
+forms = require ".."
 
-{div} = React.DOM
-###
-createForm = () ->
-  forms.Form
+submitForm = (form) ->
+  formComponent = ReactTestUtils.renderIntoDocument form
+  formComponent.submit()
+
+createMultiInputForm = ->
+  onSubmit = sinon.spy()
+
+  form = forms.Form
     schema:
-      text:
-        input: forms.inputs.TextInput
-    onSubmit: ->
-###
+      text_1: {}
+      text_2: {}
+    onSubmit: onSubmit
+  , -> React.DOM.div null,
+    React.DOM.div ref: "text_1", forms.Field name: "text_1"
+    React.DOM.div ref: "text_2", forms.Field name: "text_2"
+
+  formComponent = ReactTestUtils.renderIntoDocument form
+
+  div1 = formComponent.refs.text_1
+  div2 = formComponent.refs.text_2
+
+  input1 = ReactTestUtils.findRenderedDOMComponentWithTag div1, "input"
+  input2 = ReactTestUtils.findRenderedDOMComponentWithTag div2, "input"
+
+  return {onSubmit, formComponent, input1, input2}
 
 describe "Form", ->
 
@@ -19,20 +35,21 @@ describe "Form", ->
 
     it "should be called when the form is submitted", (done) ->
       form = forms.Form
+        defaults:
+          text: "abc"
         schema:
           text: input: forms.inputs.TextInput
         onSubmit: (data) ->
-          data.should.deep.eq {}
+          data.should.deep.eq {text: "abc"}
           done()
       , ->
         forms.Field name: "text"
 
-      c = ReactTestUtils.renderIntoDocument form
-      c.submit()
+      submitForm form
 
   describe "`onResult` callback", ->
 
-    it "should be called with messages when the form fails to validate", (done) ->
+    it "should be called with messages on validation failure", (done) ->
       form = forms.Form
         defaults:
           text: "abc"
@@ -48,8 +65,7 @@ describe "Form", ->
       , ->
         forms.Field name: "text"
 
-      c = ReactTestUtils.renderIntoDocument form
-      c.submit()
+      submitForm form
 
     it "should be called with data when the form validates", (done) ->
       form = forms.Form
@@ -66,61 +82,29 @@ describe "Form", ->
       , ->
         forms.Field name: "text"
 
-      c = ReactTestUtils.renderIntoDocument form
-      c.submit()
+      submitForm form
 
   it "should use the enter key as tab if not focused on the last input", ->
-    onSubmit = sinon.spy()
+    form = createMultiInputForm()
 
-    form = forms.Form
-      schema:
-        text_1: {}
-        text_2: {}
-      onSubmit: ->
-    , -> div null,
-      div ref: "text_1", forms.Field name: "text_1"
-      div ref: "text_2", forms.Field name: "text_2"
+    ReactTestUtils.Simulate.keyDown form.input1.getDOMNode(),
+      key: "Enter", keyCode: 13
 
-    c = ReactTestUtils.renderIntoDocument form
-
-    div1 = c.refs.text_1
-    div2 = c.refs.text_2
-
-    input1 = ReactTestUtils.findRenderedDOMComponentWithTag div1, "input"
-    input2 = ReactTestUtils.findRenderedDOMComponentWithTag div2, "input"
-
-    ReactTestUtils.Simulate.keyDown input1.getDOMNode(), key: "Enter", keyCode: 13
-
-    input1.props.focus.should.be.false
-    input2.props.focus.should.be.true
-    onSubmit.should.not.have.been.called
+    form.input1.props.focus.should.be.false
+    form.input2.props.focus.should.be.true
+    form.onSubmit.should.not.have.been.called
 
   it "should use the enter key to submit if focused on the last input", ->
-    onSubmit = sinon.spy()
+    form = createMultiInputForm()
 
-    form = forms.Form
-      schema:
-        text_1: {}
-        text_2: {}
-      onSubmit: onSubmit
-    , -> div null,
-      div ref: "text_1", forms.Field name: "text_1"
-      div ref: "text_2", forms.Field name: "text_2"
+    ReactTestUtils.Simulate.keyDown form.input1.getDOMNode(),
+      key: "Enter", keyCode: 13
+    ReactTestUtils.Simulate.keyDown form.input2.getDOMNode(),
+      key: "Enter", keyCode: 13
 
-    c = ReactTestUtils.renderIntoDocument form
-
-    div1 = c.refs.text_1
-    div2 = c.refs.text_2
-
-    input1 = ReactTestUtils.findRenderedDOMComponentWithTag div1, "input"
-    input2 = ReactTestUtils.findRenderedDOMComponentWithTag div2, "input"
-
-    ReactTestUtils.Simulate.keyDown input1.getDOMNode(), key: "Enter", keyCode: 13
-    ReactTestUtils.Simulate.keyDown input2.getDOMNode(), key: "Enter", keyCode: 13
-
-    input1.props.focus.should.be.false
-    input2.props.focus.should.be.true
-    onSubmit.should.have.been.called
+    form.input1.props.focus.should.be.false
+    form.input2.props.focus.should.be.true
+    form.onSubmit.should.have.been.called
 
   it "should display messages in descendant Message components", (done) ->
     form = forms.Form
@@ -141,18 +125,21 @@ describe "Form", ->
     c = ReactTestUtils.renderIntoDocument form
     c.submit()
 
-  xit "should have descendant Submit components submit the form on click", ->
+  it "should have descendant Submit components submit the form on click", ->
+    onSubmit = sinon.spy()
+
     form = forms.Form
-      schema: schema
-      onResult: done
+      schema: {}
+      onSubmit: onSubmit
     , ->
-      forms.Submit ref: "submit", React.DOM.button
+      forms.Submit null, React.DOM.button()
 
-    TestUtils.renderIntoDocument form
-    button = form.refs.submit.getDOMNode()
-    TestUtils.Simulate.click button
+    c = ReactTestUtils.renderIntoDocument form
+    button = ReactTestUtils.findRenderedDOMComponentWithTag c, "button"
+    ReactTestUtils.Simulate.click button
+    onSubmit.should.have.been.called
 
-  xit "should not allow multiple submits times at once", (done) ->
+  xit "should not allow multiple submits at once", (done) ->
     form.submit()
     form.submit()
 
@@ -165,24 +152,12 @@ describe "Form", ->
         done()
 
   xit "should hide messages when submitted", ->
+    # Fill with invalid data then fill with valid data.
+    # Check message content
 
-  xit "should fill fields with default values if specified", (done) ->
-    form = forms.Form
-      defaults:
-        text: "abc"
-      schema:
-        text: input: forms.inputs.TextInput
-      onResult: (messages, data) ->
-        field = ReactTestUtils.findRenderedComponentWithType c, forms.Field
-        field.getDOMNode().textContent.should.eq "abc"
-        done()
-    , -> forms.Field name: "text"
-
-    c = ReactTestUtils.renderIntoDocument form
-    c.submit()
-    # show indicators
-
+  ###
   xit "should show indicators if requested", ->
     # Show indicators after blur
 
   xit "should update indicators if the field is interactive", ->
+  ###

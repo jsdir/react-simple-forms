@@ -1,9 +1,7 @@
 React = require "react"
-TestUtils = require "react/lib/ReactTestUtils"
+ReactTestUtils = require "react/lib/ReactTestUtils"
 
-#validate = require "../lib/validate"
-#validateField = sinon.stub validate, "validateField"
-forms = require "../index"
+forms = require ".."
 
 TestInput = React.createClass
   displayName: "TestInput"
@@ -16,12 +14,6 @@ describe "Field", ->
     schema:
       field:
         input: TestInput
-
-  afterEach ->
-    #validateField.reset()
-
-  after ->
-    #validateField.restore()
 
   it "should require its name to be registered in the schema", (done) ->
     context = createContext()
@@ -40,47 +32,6 @@ describe "Field", ->
       field = forms.Field name: "field"
       instance = TestUtils.renderIntoDocument field
       instance.getDOMNode().textContent.should.equal "contextDefault"
-      done()
-
-  xit "should work if there is no default value in context", (done) ->
-    context = createContext()
-    React.withContext context, ->
-      field = forms.Field name: "field"
-      instance = TestUtils.renderIntoDocument field
-      instance.getDOMNode().textContent.should.equal ""
-      done()
-
-  xit "should run #context.onChange() when the input changes", (done) ->
-    context = createContext()
-
-    context.onChange = (field, value) ->
-      field.should.equal "field"
-      value.should.equal "changedInput"
-      done()
-
-    context.schema.field.input = forms.inputs.TextInput
-    React.withContext context, ->
-      field = forms.Field name: "field"
-      instance = TestUtils.renderIntoDocument field
-      e = target: value: "changedInput"
-      input = TestUtils.findRenderedDOMComponentWithTag instance, "input"
-      TestUtils.Simulate.change input, e
-
-  xit "should initially validate defaults inherited from context", (done) ->
-    context = createContext()
-    context.defaults.field = "contextDefault"
-    React.withContext context, =>
-      field = forms.Field name: "field"
-      TestUtils.renderIntoDocument field
-      validateField.should.have.been.calledOnce
-      done()
-
-  xit "should not initially validate if default is absent", (done) ->
-    context = createContext()
-    React.withContext context, =>
-      field = forms.Field name: "field"
-      TestUtils.renderIntoDocument field
-      validateField.should.not.have.been.called
       done()
 
   xit "should validate on input if the field is interactive", (done) ->
