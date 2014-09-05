@@ -31,6 +31,8 @@ createMultiInputForm = ->
 
 describe "Form", ->
 
+  # Callbacks
+
   describe "`onSubmit` callback", ->
 
     it "should be called when the form is submitted", (done) ->
@@ -67,7 +69,7 @@ describe "Form", ->
 
       submitForm form
 
-    it "should be called with data when the form validates", (done) ->
+    it "should be called with data on validation success", (done) ->
       form = forms.Form
         defaults:
           text: "abcd"
@@ -84,46 +86,31 @@ describe "Form", ->
 
       submitForm form
 
-  it "should use the enter key as tab if not focused on the last input", ->
-    form = createMultiInputForm()
+  describe "enter key", ->
 
-    ReactTestUtils.Simulate.keyDown form.input1.getDOMNode(),
-      key: "Enter", keyCode: 13
+    it "should function as tab if not focused on the last input", ->
+      form = createMultiInputForm()
 
-    form.input1.props.focus.should.be.false
-    form.input2.props.focus.should.be.true
-    form.onSubmit.should.not.have.been.called
+      ReactTestUtils.Simulate.keyDown form.input1.getDOMNode(),
+        key: "Enter", keyCode: 13
 
-  it "should use the enter key to submit if focused on the last input", ->
-    form = createMultiInputForm()
+      form.input1.props.focus.should.be.false
+      form.input2.props.focus.should.be.true
+      form.onSubmit.should.not.have.been.called
 
-    ReactTestUtils.Simulate.keyDown form.input1.getDOMNode(),
-      key: "Enter", keyCode: 13
-    ReactTestUtils.Simulate.keyDown form.input2.getDOMNode(),
-      key: "Enter", keyCode: 13
+    it "should function as submit if focused on the last input", ->
+      form = createMultiInputForm()
 
-    form.input1.props.focus.should.be.false
-    form.input2.props.focus.should.be.true
-    form.onSubmit.should.have.been.called
+      ReactTestUtils.Simulate.keyDown form.input1.getDOMNode(),
+        key: "Enter", keyCode: 13
+      ReactTestUtils.Simulate.keyDown form.input2.getDOMNode(),
+        key: "Enter", keyCode: 13
 
-  it "should display messages in descendant Message components", (done) ->
-    form = forms.Form
-      defaults:
-        text: "abc"
-      schema:
-        text:
-          input: forms.inputs.TextInput
-          rules: min: 4
-      onResult: (messages, data) ->
-        message = ReactTestUtils.findRenderedComponentWithType c, forms.Message
-        message.getDOMNode().textContent.should.eq 'attribute "text" must have a minimum of 4 characters'
-        done()
-    , -> React.DOM.div null,
-      forms.Message()
-      forms.Field name: "text"
+      form.input1.props.focus.should.be.false
+      form.input2.props.focus.should.be.true
+      form.onSubmit.should.have.been.called
 
-    c = ReactTestUtils.renderIntoDocument form
-    c.submit()
+  # Submit
 
   it "should have descendant Submit components submit the form on click", ->
     onSubmit = sinon.spy()
@@ -139,25 +126,72 @@ describe "Form", ->
     ReactTestUtils.Simulate.click button
     onSubmit.should.have.been.called
 
-  xit "should not allow multiple submits at once", (done) ->
+  it "should not allow multiple submits at once", ->
+    onSubmit = sinon.spy()
+
+    form = ReactTestUtils.renderIntoDocument forms.Form
+      schema: text: rules: customValidator: (value, cb) ->
+        setTimeout ->
+          cb null, "result"
+        , 0
+      onSubmit: onSubmit
+    , -> null
+
     form.submit()
     form.submit()
 
-  xit "should use custom messages", (done) ->
-    form = forms.Form
-      schema: 1
-      messages: 1
-      onResult: (messages) ->
-        messages.should.deep.eq field: "message"
+    onSubmit.should.have.been.calledOnce
+
+  # Validation Messages
+
+  it "should display default messages", (done) ->
+    form = ReactTestUtils.renderIntoDocument forms.Form
+      defaults:
+        text: "abc"
+      schema:
+        text:
+          input: forms.inputs.TextInput
+          rules: min: 4
+      onResult: (messages, data) ->
+        messageComponent = ReactTestUtils.findRenderedComponentWithType(
+          form, forms.Message
+        )
+        message = 'attribute "text" must have a minimum of 4 characters'
+        messages.should.deep.eq text: message
+        messageComponent.getDOMNode().textContent.should.eq message
         done()
+    , -> React.DOM.div null,
+      forms.Message()
+      forms.Field name: "text"
 
-  xit "should hide messages when submitted", ->
+    form.submit()
+
+  it "should display custom messages", (done) ->
+    form = ReactTestUtils.renderIntoDocument forms.Form
+      defaults:
+        text: "abc"
+      schema:
+        text:
+          input: forms.inputs.TextInput
+          rules: min: 4
+      messages:
+        min: -> "custom message"
+      onResult: (messages, data) ->
+        messageComponent = ReactTestUtils.findRenderedComponentWithType(
+          form, forms.Message
+        )
+        message = "custom message"
+        messages.should.deep.eq text: message
+        messageComponent.getDOMNode().textContent.should.eq message
+        done()
+    , -> React.DOM.div null,
+      forms.Message()
+      forms.Field name: "text"
+
+    form.submit()
+
+  xit "should hide messages on submit", ->
     # Fill with invalid data then fill with valid data.
     # Check message content
 
-  ###
-  xit "should show indicators if requested", ->
-    # Show indicators after blur
-
-  xit "should update indicators if the field is interactive", ->
-  ###
+  xit "should hide messages on field input", ->

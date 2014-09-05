@@ -41,6 +41,7 @@ Form = React.createClass
     message: null
     focused: null
     fieldOrder: []
+    submitting: false
 
   getChildContext: ->
     defaults: @props.defaults
@@ -82,20 +83,24 @@ Form = React.createClass
       @submit()
 
   submit: ->
-    # Call `onSubmit` callback.
-    @props.onSubmit? @state.data
+    unless @state.submitting
+      @setState submitting: true
 
-    # Validate data.
-    valids.validate @state.data,
-      schema: @props.schema
-      messages: @props.messages
-    , (messages) =>
-      if messages
-        @setState
-          message: _.values(messages)[0]
-          statuses: _.object _.map messages, (message, field) ->
-            [field, "invalid"]
-      @props.onResult? messages, @state.data
+      # Call `onSubmit` callback.
+      @props.onSubmit? @state.data
+
+      # Validate data.
+      valids.validate @state.data,
+        schema: @props.schema
+        messages: @props.messages
+      , (messages) =>
+        @setState submitting: false
+        if messages
+          @setState
+            message: _.values(messages)[0]
+            statuses: _.object _.map messages, (message, field) ->
+              [field, "invalid"]
+        @props.onResult? messages, @state.data
 
   render: -> div null, @props.children()
 

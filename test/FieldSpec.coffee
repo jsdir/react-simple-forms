@@ -1,65 +1,27 @@
-React = require "react"
 ReactTestUtils = require "react/lib/ReactTestUtils"
 
 forms = require ".."
 
-TestInput = React.createClass
-  displayName: "TestInput"
-  render: -> React.DOM.div null, @props.value
-
 describe "Field", ->
 
-  createContext = ->
-    defaults: {}
-    schema:
-      field:
-        input: TestInput
+  # Options
 
-  it "should require its name to be registered in the schema", (done) ->
-    context = createContext()
-    context.schema = {}
-    React.withContext context, ->
-      expect(->
-        field = forms.Field value: "default", name: "field"
-        instance = TestUtils.renderIntoDocument field
-      ).to.throw "A field with name \"field\" does not exist in the schema."
-      done()
+  xit "should require its name to be registered in the schema", (done) ->
+    expect(->
+      field = forms.Field value: "default", name: "field"
+      instance = ReactTestUtils.renderIntoDocument field
+    ).to.throw "A field with name \"field\" does not exist in the schema."
+    done()
 
-  xit "should show the default value from inherited context", (done) ->
-    context = createContext()
-    context.defaults.field = "contextDefault"
-    React.withContext context, ->
-      field = forms.Field name: "field"
-      instance = TestUtils.renderIntoDocument field
-      instance.getDOMNode().textContent.should.equal "contextDefault"
-      done()
+  # Validation
 
   xit "should validate on input if the field is interactive", (done) ->
-    context = createContext()
-    context.schema.field.interactive = true
-    context.schema.field.input = forms.inputs.TextInput
+    # initial should be blank
+    # Test with presence success or fail indicators, both should not show error decorator
 
-    context.setValidationResult = (field, message) ->
-      field.should.equal "field"
-      #done()
+    # if no indicators only show error decoration or not
 
-    React.withContext context, =>
-      field = forms.Field name: "field"
-      instance = TestUtils.renderIntoDocument field
-
-      e = target: value: "changedInput"
-      TestUtils.Simulate.change instance.getDOMNode(), e
-      validateField.should.have.been.calledOnce
-      # validateField.reset()
-      done()
-    # Assert validate is called.
-    # check that callbacks are sent, namely through context
-    # setValidationResult fieldName, message or null
-    # should show indicator. should not show error formatting
-    # this is the only instance in which the failing indicator will be shown
-
-  xit "should hide error formatting and indicators on input", (done) ->
-
+    # test async validators
 
   xit "should validate non-interactive fields on blur", (done) ->
     # (if the field was interactive, an indicator would already be showing
@@ -73,7 +35,8 @@ describe "Field", ->
     # Validation results at the field levels are stored at the form level to
     # make final validation more efficient.
 
-# Is getChildContext called on every render? If so, see if it can pull from
-# state. Pull initialValidationState ({...}) into context, and render the
-# fields to get their initial state (state.invalid, default:false) from
-# context.
+  xit "should hide error formatting and indicators on input", (done) ->
+    # for all fields interactive/noninteractive
+
+  xit "should show error formatting and message on any field blur", ->
+
