@@ -9,7 +9,7 @@ TestInput = React.createClass
   displayName: "TestInput"
   render: -> React.DOM.div null, @props.value
 
-xdescribe "Field", ->
+describe "Field", ->
 
   createContext = ->
     defaults: {}
@@ -33,7 +33,7 @@ xdescribe "Field", ->
       ).to.throw "A field with name \"field\" does not exist in the schema."
       done()
 
-  it "should show the default value from inherited context", (done) ->
+  xit "should show the default value from inherited context", (done) ->
     context = createContext()
     context.defaults.field = "contextDefault"
     React.withContext context, ->
@@ -42,7 +42,7 @@ xdescribe "Field", ->
       instance.getDOMNode().textContent.should.equal "contextDefault"
       done()
 
-  it "should work if there is no default value in context", (done) ->
+  xit "should work if there is no default value in context", (done) ->
     context = createContext()
     React.withContext context, ->
       field = forms.Field name: "field"
@@ -50,7 +50,7 @@ xdescribe "Field", ->
       instance.getDOMNode().textContent.should.equal ""
       done()
 
-  it "should run #context.onChange() when the input changes", (done) ->
+  xit "should run #context.onChange() when the input changes", (done) ->
     context = createContext()
 
     context.onChange = (field, value) ->
@@ -66,7 +66,7 @@ xdescribe "Field", ->
       input = TestUtils.findRenderedDOMComponentWithTag instance, "input"
       TestUtils.Simulate.change input, e
 
-  it "should initially validate defaults inherited from context", (done) ->
+  xit "should initially validate defaults inherited from context", (done) ->
     context = createContext()
     context.defaults.field = "contextDefault"
     React.withContext context, =>
@@ -75,7 +75,7 @@ xdescribe "Field", ->
       validateField.should.have.been.calledOnce
       done()
 
-  it "should not initially validate if default is absent", (done) ->
+  xit "should not initially validate if default is absent", (done) ->
     context = createContext()
     React.withContext context, =>
       field = forms.Field name: "field"

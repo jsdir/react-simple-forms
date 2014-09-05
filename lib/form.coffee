@@ -73,7 +73,7 @@ Form = React.createClass
   onFieldFocus: (field) ->
     @setState focused: field
 
-  onEnterDown: () ->
+  onEnterDown: ->
     index = _.indexOf @state.fieldOrder, @state.focused
     if index + 1 < @state.fieldOrder.length
       @setState focused: @state.fieldOrder[index + 1]
@@ -139,7 +139,7 @@ Field = React.createClass
   onKeyDown: (e) ->
     @context.onEnterDown @props.name if e.keyCode is 13
 
-  render: -> @state.input
+  render: -> @transferPropsTo @state.input
     options: @state.options
     value: @state.value
     onChange: @onChange

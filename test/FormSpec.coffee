@@ -3,6 +3,7 @@ ReactTestUtils = require "react/lib/ReactTestUtils"
 
 forms = require "../index"
 
+{div} = React.DOM
 ###
 createForm = () ->
   forms.Form
@@ -12,7 +13,7 @@ createForm = () ->
     onSubmit: ->
 ###
 
-describe "Forms", ->
+describe "Form", ->
 
   describe "`onSubmit` callback", ->
 
@@ -59,7 +60,6 @@ describe "Forms", ->
             input: forms.inputs.TextInput
             rules: min: 4
         onResult: (messages, data) ->
-          message = 'attribute "text" must have a minimum of 4 characters'
           expect(messages).to.be.null
           data.should.deep.eq {text: "abcd"}
           done()
@@ -69,9 +69,58 @@ describe "Forms", ->
       c = ReactTestUtils.renderIntoDocument form
       c.submit()
 
-  xit "should use the enter key as tab if not focused on the last input", ->
+  it "should use the enter key as tab if not focused on the last input", ->
+    onSubmit = sinon.spy()
 
-  xit "should use the enter key to submit if focused on the last input", ->
+    form = forms.Form
+      schema:
+        text_1: {}
+        text_2: {}
+      onSubmit: ->
+    , -> div null,
+      div ref: "text_1", forms.Field name: "text_1"
+      div ref: "text_2", forms.Field name: "text_2"
+
+    c = ReactTestUtils.renderIntoDocument form
+
+    div1 = c.refs.text_1
+    div2 = c.refs.text_2
+
+    input1 = ReactTestUtils.findRenderedDOMComponentWithTag div1, "input"
+    input2 = ReactTestUtils.findRenderedDOMComponentWithTag div2, "input"
+
+    ReactTestUtils.Simulate.keyDown input1.getDOMNode(), key: "Enter", keyCode: 13
+
+    input1.props.focus.should.be.false
+    input2.props.focus.should.be.true
+    onSubmit.should.not.have.been.called
+
+  it "should use the enter key to submit if focused on the last input", ->
+    onSubmit = sinon.spy()
+
+    form = forms.Form
+      schema:
+        text_1: {}
+        text_2: {}
+      onSubmit: onSubmit
+    , -> div null,
+      div ref: "text_1", forms.Field name: "text_1"
+      div ref: "text_2", forms.Field name: "text_2"
+
+    c = ReactTestUtils.renderIntoDocument form
+
+    div1 = c.refs.text_1
+    div2 = c.refs.text_2
+
+    input1 = ReactTestUtils.findRenderedDOMComponentWithTag div1, "input"
+    input2 = ReactTestUtils.findRenderedDOMComponentWithTag div2, "input"
+
+    ReactTestUtils.Simulate.keyDown input1.getDOMNode(), key: "Enter", keyCode: 13
+    ReactTestUtils.Simulate.keyDown input2.getDOMNode(), key: "Enter", keyCode: 13
+
+    input1.props.focus.should.be.false
+    input2.props.focus.should.be.true
+    onSubmit.should.have.been.called
 
   it "should display messages in descendant Message components", (done) ->
     form = forms.Form
@@ -117,7 +166,7 @@ describe "Forms", ->
 
   xit "should hide messages when submitted", ->
 
-  it "should fill fields with default values if specified", (done) ->
+  xit "should fill fields with default values if specified", (done) ->
     form = forms.Form
       defaults:
         text: "abc"

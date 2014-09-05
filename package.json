@@ -12,7 +12,7 @@
     "react": "~0.11.0"
   },
   "devDependencies": {
-    "karma-browserifast": "~0.6.1",
+    "karma-browserifast": "~0.7.0",
     "es5-shim": "~3.4.0",
     "mocha": "~1.19.0",
     "karma-mocha": "~0.1.3",
