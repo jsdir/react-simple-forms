@@ -6,12 +6,12 @@ describe "Field", ->
 
   # Options
 
-  xit "should require its name to be registered in the schema", (done) ->
+  it "should require its name to be registered in the schema", ->
     expect(->
-      field = forms.Field value: "default", name: "field"
-      instance = ReactTestUtils.renderIntoDocument field
+      ReactTestUtils.renderIntoDocument forms.Form
+        schema: {}
+      , -> forms.Field name: "field"
     ).to.throw "A field with name \"field\" does not exist in the schema."
-    done()
 
   # Validation
 
