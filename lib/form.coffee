@@ -19,6 +19,7 @@ Form = React.createClass
     onResult: React.PropTypes.func
     onInput: React.PropTypes.func
     schema: React.PropTypes.object.isRequired
+    showIndicators: React.PropTypes.bool
 
   childContextTypes:
     defaults: React.PropTypes.object
@@ -63,16 +64,58 @@ Form = React.createClass
     data = {}
     data[field] = {$set: value}
 
-    statuses = {}
-    statuses[field] = {$set: "valid"}
+    # Hide error formatting and indicators.
+    @setStatus field, "valid"
+
+    # Validate if field is interactive
+    if @isInteractive field
+      @validateField field, value, true
 
     @setState
       message: null
       data: update @state.data, data
-      statuses: update @state.statuses, statuses
+
     @props.onInput?()
 
+  validate: (data, onResult) ->
+    valids.validate data,
+      schema: @props.schema
+      messages: @props.messages
+    , onResult
+
+  showMessages: (messages) ->
+    @setState message: _.values(messages)[0]
+
+  validateField: (field, value, interactive) ->
+    data = {}
+    data[field] = value
+    @validate data, (messages) ->
+      if messages
+        if interactive
+          # only show indicator or error decorator
+          @setStatus field, "invalidInteractive"
+        else
+          # Show the validation message.
+          @showMessages messages
+          # Show error formatting and indicators.
+          @setStatus field, "invalid"
+
+  isInteractive: (field) ->
+    @props.schema[field].interactive
+
+  setStatus: (field, status) ->
+    statuses = {}
+    statuses[field] = {$set: status}
+    @setState statuses: update @state.statuses, statuses
+
   onFieldFocus: (field) ->
+    if @state.focused
+      # Handle the field that is being blurred.
+      # Validate if not interactive and not empty.
+      value = @state.data[@state.focused]
+      if value? and @isInteractive field
+        @validateField field, value, false
+
     @setState focused: field
 
   onEnterDown: ->
@@ -90,14 +133,11 @@ Form = React.createClass
       @props.onSubmit? @state.data
 
       # Validate data.
-      valids.validate @state.data,
-        schema: @props.schema
-        messages: @props.messages
-      , (messages) =>
+      @validate @state.data, (messages) =>
         @setState submitting: false
         if messages
+          @showMessages messages
           @setState
-            message: _.values(messages)[0]
             statuses: _.object _.map messages, (message, field) ->
               [field, "invalid"]
         @props.onResult? messages, @state.data
