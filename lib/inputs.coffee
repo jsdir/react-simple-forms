@@ -30,6 +30,7 @@ Input =
     onChange: React.PropTypes.func
     status: React.PropTypes.string
     onFocus: React.PropTypes.func
+    onBlur: React.PropTypes.func
     focus: React.PropTypes.bool
     valid: React.PropTypes.object
     showIndicators: React.PropTypes.bool

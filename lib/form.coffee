@@ -26,6 +26,7 @@ Form = React.createClass
     schema: React.PropTypes.object
     onChange: React.PropTypes.func
     onFocus: React.PropTypes.func
+    onBlur: React.PropTypes.func
     statuses: React.PropTypes.object
     message: React.PropTypes.string
     onEnterDown: React.PropTypes.func
@@ -50,6 +51,7 @@ Form = React.createClass
     schema: @props.schema
     onChange: @onFieldChange
     onFocus: @onFieldFocus
+    onBlur: @onFieldBlur
     statuses: @state.statuses
     message: @state.message
     onEnterDown: @onEnterDown
@@ -120,14 +122,16 @@ Form = React.createClass
     @setState statuses: update @state.statuses, statuses
 
   onFieldFocus: (field) ->
-    if @state.focused
-      # Handle the field that is being blurred.
-      # Validate if not interactive and not empty.
-      value = @state.data[@state.focused]
-      if value?
-        @validateField @state.focused, value, false
-
     @setState focused: field
+
+  onFieldBlur: (field) ->
+    @setState focused: null
+
+    # Handle the field that is being blurred.
+    # Validate if not interactive and not empty.
+    value = @state.data[field]
+    if value?
+      @validateField field, value, false
 
   onEnterDown: ->
     index = _.indexOf @state.fieldOrder, @state.focused
@@ -168,6 +172,7 @@ Field = React.createClass
     schema: React.PropTypes.object.isRequired
     onChange: React.PropTypes.func.isRequired
     onFocus: React.PropTypes.func.isRequired
+    onBlur: React.PropTypes.func.isRequired
     statuses: React.PropTypes.object.isRequired
     onEnterDown: React.PropTypes.func.isRequired
     fieldOrder: React.PropTypes.array.isRequired
@@ -195,17 +200,20 @@ Field = React.createClass
   onFocus: ->
     @context.onFocus @props.name
 
+  onBlur: ->
+    @context.onBlur @props.name
+
   onKeyDown: (e) ->
     @context.onEnterDown @props.name if e.keyCode is 13
 
   render: ->
-    console.log @state.options
     return @transferPropsTo @state.input _.extend {},
       options: @state.options
       value: @state.value
       onChange: @onChange
       onKeyDown: @onKeyDown
       onFocus: @onFocus
+      onBlur: @onBlur
       valid: @context.statuses[@props.name]
       focus: @props.name is @context.focused
       showIndicators: @context.showIndicators
