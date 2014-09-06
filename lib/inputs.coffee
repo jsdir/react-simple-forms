@@ -103,46 +103,46 @@ DateInput = React.createClass
   getInitialState: ->
     date = new Date()
     return {
-      date
+      value: @props.value
       currentYear: date.getFullYear()
     }
 
   onMonthChange: (e) ->
-    month = e.target.value
-    date = @state.date
+    month = parseInt e.target.value
+    date = @state.value
     # Ensure that the day is valid with the selected month.
     # Correct the day if it is invalid.
-    year = @state.date.getFullYear()
-    date.setDate Math.min date.getDate(), daysInMonth month, year
+    year = @state.value.getFullYear()
+    date.setDate Math.min date.getDate(), daysInMonth month + 1, year
     date.setMonth month
     @setDate date
 
   onDayChange: (e) ->
-    date = @state.date
-    date.setDate e.target.value
+    date = @state.value
+    date.setDate parseInt e.target.value
     @setDate date
 
   onYearChange: (e) ->
-    date = @state.date
-    date.setFullYear e.target.value
+    date = @state.value
+    date.setFullYear parseInt e.target.value
     @setDate date
 
   setDate: (date) ->
-    @setState {date}
+    @setState {value: date}
     @props.onChange date
 
   renderMonthSelector: ->
     months = _.map monthMap, (month) -> option value: month[0], month[1]
     return select
-      value: @state.date.getMonth()
+      value: @state.value.getMonth()
       onChange: @onMonthChange
     , months
 
   renderDaySelector: ->
-    days = [1..daysInMonth(@state.date.getMonth(), @state.date.getFullYear())]
+    days = [1..daysInMonth(@state.value.getMonth() + 1, @state.value.getFullYear())]
     dayOptions = _.map days, (day) -> option value: day, day
     return select
-      value: @state.date.getDate()
+      value: @state.value.getDate()
       onChange: @onDayChange
     , dayOptions
 
@@ -150,7 +150,7 @@ DateInput = React.createClass
     years = _.map [@state.currentYear..1900], (year) ->
       option value: year, year
     return select
-      value: @state.date.getFullYear()
+      value: @state.value.getFullYear()
       onChange: @onYearChange
     , years
 
