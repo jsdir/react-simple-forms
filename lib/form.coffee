@@ -125,7 +125,9 @@ Form = React.createClass
   onEnterDown: ->
     index = _.indexOf @state.fieldOrder, @state.focused
     if index + 1 < @state.fieldOrder.length
-      @setState focused: @state.fieldOrder[index + 1]
+      field = @state.fieldOrder[index + 1]
+      @onFieldFocus field
+      @setState focused: field
     else
       @submit()
 
