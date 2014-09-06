@@ -67,7 +67,7 @@ Form = React.createClass
     data[field] = {$set: value}
 
     # Hide error formatting and indicators.
-    @setValid field, true
+    @setValid field, valid: null
 
     # Validate if field is interactive
     if @isInteractive field
@@ -79,9 +79,9 @@ Form = React.createClass
 
     @props.onInput?()
 
-  validate: (data, onResult) ->
+  validate: (data, schema, onResult) ->
     valids.validate data,
-      schema: @props.schema
+      schema: schema
       messages: @props.messages
     , onResult
 
@@ -91,12 +91,18 @@ Form = React.createClass
   validateField: (field, value, interactive) ->
     data = {}
     data[field] = value
-    @validate data, (messages) ->
+
+    # Only validate the single field.
+    schema = _.pick @props.schema, [field]
+
+    @validate data, schema, (messages) =>
       if messages
-        @setValid field, false
+        @setValid field, {valid: false, interactive}
         unless interactive
           # Show the validation message.
           @showMessages messages
+      else
+        @setValid field, valid: true
 
   isInteractive: (field) ->
     @props.schema[field].interactive
@@ -111,8 +117,8 @@ Form = React.createClass
       # Handle the field that is being blurred.
       # Validate if not interactive and not empty.
       value = @state.data[@state.focused]
-      if value? and @isInteractive field
-        @validateField field, value, false
+      if value?
+        @validateField @state.focused, value, false
 
     @setState focused: field
 
@@ -131,13 +137,13 @@ Form = React.createClass
       @props.onSubmit? @state.data
 
       # Validate data.
-      @validate @state.data, (messages) =>
+      @validate @state.data, @props.schema, (messages) =>
         @setState submitting: false
         if messages
           @showMessages messages
           @setState
             statuses: _.object _.map messages, (message, field) ->
-              [field, "invalid"]
+              [field, valid: false]
         @props.onResult? messages, @state.data
 
   render: -> div null, @props.children()

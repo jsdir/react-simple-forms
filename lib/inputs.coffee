@@ -31,17 +31,17 @@ Input =
     status: React.PropTypes.string
     onFocus: React.PropTypes.func
     focus: React.PropTypes.bool
-    valid: React.PropTypes.bool
+    valid: React.PropTypes.object
     showIndicators: React.PropTypes.bool
 
   shouldRenderIndicator: ->
     if @props.showIndicators
-      return @props.valid
+      return @props.valid?.valid
     else
       return null
 
   shouldRenderFormatting: ->
-    @props.valid is false # and @props.options.interactive
+    @props.valid?.valid is false and not @props.valid?.interactive
 
 Text =
   onChange: (e) ->
