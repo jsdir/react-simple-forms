@@ -59,6 +59,13 @@ Form = React.createClass
     showIndicators: @props.showIndicators
 
   componentDidMount: ->
+    @props.schema = _.cloneDeep @props.schema
+
+    _.each @props.schema, (field, name) ->
+      # Delete match rules since they will not work with only one field.
+      if field.rules?.match
+        delete field.rules.match
+
     @setState focused: _.first @state.fieldOrder
 
   onFieldChange: (field, value) ->
