@@ -1,6 +1,6 @@
 {
   "name": "react-simple-forms",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "Simple forms for react. Loosely based on react-forms.",
   "main": "index.js",
   "dependencies": {
