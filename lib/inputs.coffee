@@ -3,7 +3,7 @@ React = require "react"
 cx = require "react/lib/cx"
 ReactCSSTransitionGroup = require "react/lib/ReactCSSTransitionGroup"
 
-{div, input, select, option, i} = React.DOM
+{div, input, select, option, i, button} = React.DOM
 
 monthMap = _.map [
   "January"
@@ -106,7 +106,8 @@ DateInput = React.createClass
       currentYear: date.getFullYear()
     }
 
-  onMonthChange: (month) ->
+  onMonthChange: (e) ->
+    month = e.target.value
     date = @state.date
     # Ensure that the day is valid with the selected month.
     # Correct the day if it is invalid.
@@ -115,19 +116,19 @@ DateInput = React.createClass
     date.setMonth month
     @setDate date
 
-  onDayChange: (day) ->
+  onDayChange: (e) ->
     date = @state.date
-    date.setDate day
+    date.setDate e.target.value
     @setDate date
 
-  onYearChange: (year) ->
+  onYearChange: (e) ->
     date = @state.date
-    date.setFullYear year
+    date.setFullYear e.target.value
     @setDate date
 
   setDate: (date) ->
     @setState {date}
-    @onChange date
+    @props.onChange date
 
   renderMonthSelector: ->
     months = _.map monthMap, (month) -> option value: month[0], month[1]
@@ -163,7 +164,8 @@ ChoiceInput = React.createClass
   mixins: [Input]
 
   propTypes:
-    choices: React.PropTypes.array.isRequired
+    choices: React.PropTypes.object.isRequired
+    btnClass: React.PropTypes.string
     default: React.PropTypes.string
 
   getInitialState: ->
@@ -174,11 +176,12 @@ ChoiceInput = React.createClass
     @props.onChange value
 
   render: ->
-    div className: "btn-group", _.map @props.choices, (choice) =>
+    btnClass = @props.btnClass or ""
+    div className: "btn-group", _.map @props.choices, (title, choice) =>
       button
         onClick: => @onChoiceSelect choice
-        className: "active" if @state.choice is choice
-      , @props.choices[choice]
+        className: btnClass + " " + cx active: @state.value is choice
+      , title
 
 module.exports = {
   TextInput

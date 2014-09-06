@@ -198,15 +198,18 @@ Field = React.createClass
   onKeyDown: (e) ->
     @context.onEnterDown @props.name if e.keyCode is 13
 
-  render: -> @transferPropsTo @state.input
-    options: @state.options
-    value: @state.value
-    onChange: @onChange
-    onKeyDown: @onKeyDown
-    onFocus: @onFocus
-    valid: @context.statuses[@props.name]
-    focus: @props.name is @context.focused
-    showIndicators: @context.showIndicators
+  render: ->
+    console.log @state.options
+    return @transferPropsTo @state.input _.extend {},
+      options: @state.options
+      value: @state.value
+      onChange: @onChange
+      onKeyDown: @onKeyDown
+      onFocus: @onFocus
+      valid: @context.statuses[@props.name]
+      focus: @props.name is @context.focused
+      showIndicators: @context.showIndicators
+    , @state.options.inputOptions
 
 Message = React.createClass
   displayName: "Message"
