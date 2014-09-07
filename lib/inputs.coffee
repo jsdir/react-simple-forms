@@ -132,7 +132,10 @@ DateInput = React.createClass
     @props.onChange date
 
   renderMonthSelector: ->
-    months = _.map monthMap, (month) -> option value: month[0], month[1]
+    months = _.map monthMap, (month) -> option
+      value: month[0], key: month[0]
+    , month[1]
+
     return select
       className: "input-date-month"
       value: @state.value.getMonth()
@@ -140,8 +143,10 @@ DateInput = React.createClass
     , months
 
   renderDaySelector: ->
-    days = [1..daysInMonth(@state.value.getMonth() + 1, @state.value.getFullYear())]
-    dayOptions = _.map days, (day) -> option value: day, day
+    days = [
+      1..daysInMonth(@state.value.getMonth() + 1, @state.value.getFullYear())
+    ]
+    dayOptions = _.map days, (day) -> option value: day, key: day, day
     return select
       className: "input-date-day"
       value: @state.value.getDate()
@@ -150,7 +155,7 @@ DateInput = React.createClass
 
   renderYearSelector: ->
     years = _.map [@state.currentYear..1900], (year) ->
-      option value: year, year
+      option value: year, key: year, year
     return select
       className: "input-date-year"
       value: @state.value.getFullYear()
