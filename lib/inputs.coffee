@@ -143,9 +143,8 @@ DateInput = React.createClass
     , months
 
   renderDaySelector: ->
-    days = [
-      1..daysInMonth(@state.value.getMonth() + 1, @state.value.getFullYear())
-    ]
+    fullYear = @state.value.getFullYear()
+    days = [1..daysInMonth(@state.value.getMonth() + 1, fullYear)]
     dayOptions = _.map days, (day) -> option value: day, key: day, day
     return select
       className: "input-date-day"
@@ -188,6 +187,7 @@ ChoiceInput = React.createClass
     btnClass = @props.btnClass or ""
     div className: "group", _.map @props.choices, (title, choice) =>
       button
+        key: choice
         onClick: => @onChoiceSelect choice
         className: btnClass + " " + cx active: @state.value is choice
       , title
