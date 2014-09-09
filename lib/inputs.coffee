@@ -204,4 +204,5 @@ module.exports = {
   PasswordInput
   DateInput
   ChoiceInput
+  TextareaInput
 }
