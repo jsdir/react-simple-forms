@@ -39,6 +39,14 @@ describe "PasswordInput", ->
   it "should be set to a default value", ->
     assertTextInputDefaults forms.inputs.PasswordInput
 
+describe "TextareaInput", ->
+
+  it "should change value correctly", (done) ->
+    assertTextInputChangesValue forms.inputs.TextareaInput, done
+
+  it "should be set to a default value", ->
+    assertTextInputDefaults forms.inputs.TextareaInput
+
 ###
 describe "DateInput", ->
 
