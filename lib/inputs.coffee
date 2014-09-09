@@ -3,7 +3,7 @@ React = require "react"
 cx = require "react/lib/cx"
 ReactCSSTransitionGroup = require "react/lib/ReactCSSTransitionGroup"
 
-{div, input, select, option, i, button} = React.DOM
+{div, input, select, option, i, button, textarea} = React.DOM
 
 monthMap = _.map [
   "January"
@@ -69,7 +69,7 @@ Text =
 
     return ReactCSSTransitionGroup transitionName: "fade", indicator
 
-  renderInput: (options) ->
+  renderInput: (el, options) ->
     props = _.extend {},
       ref: "input"
       value: @props.value
@@ -79,7 +79,7 @@ Text =
     , options
 
     return div className: "form-field",
-      @transferPropsTo input props
+      @transferPropsTo el props
       @renderIndicator()
 
 TextInput = React.createClass
@@ -87,14 +87,21 @@ TextInput = React.createClass
   mixins: [Input, Text]
 
   render: ->
-    @renderInput()
+    @renderInput input
 
 PasswordInput = React.createClass
   displayName: "PasswordInput"
   mixins: [Input, Text]
 
   render: ->
-    @renderInput type: "password"
+    @renderInput input, type: "password"
+
+TextareaInput = React.createClass
+  displayName: "TextareaInput"
+  mixins: [Input, Text]
+
+  render: ->
+    @renderInput textarea
 
 DateInput = React.createClass
   displayName: "DateInput"
