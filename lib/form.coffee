@@ -217,6 +217,8 @@ Field = React.createClass
       valid: @context.statuses[@props.name]
       focus: @props.name is @context.focused
       showIndicators: @context.showIndicators
+      className: cx
+        "form-input-with-indicator": @context.showIndicators
     , @state.options.inputOptions
 
 Message = React.createClass
