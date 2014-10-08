@@ -2,7 +2,7 @@ ReactTestUtils = require "react/lib/ReactTestUtils"
 
 forms = require ".."
 
-assertTextInputChangesValue = (input, done) ->
+assertTextInputChangesValue = (input, tag, done) ->
   form = ReactTestUtils.renderIntoDocument forms.Form
     schema: text: input: input
     onSubmit: (data) ->
@@ -10,42 +10,42 @@ assertTextInputChangesValue = (input, done) ->
       done()
   , -> forms.Field name: "text"
 
-  input = ReactTestUtils.findRenderedDOMComponentWithTag form, "input"
+  input = ReactTestUtils.findRenderedDOMComponentWithTag form, tag
   ReactTestUtils.Simulate.change input.getDOMNode(), target: value: "value"
   form.submit()
 
-assertTextInputDefaults = (input) ->
+assertTextInputDefaults = (input, tag) ->
   form = ReactTestUtils.renderIntoDocument forms.Form
     schema: text: input: input
     defaults: text: "default"
   , -> forms.Field name: "text"
 
-  input = ReactTestUtils.findRenderedDOMComponentWithTag form, "input"
+  input = ReactTestUtils.findRenderedDOMComponentWithTag form, tag
   input.getDOMNode().value.should.eq "default"
 
 describe "TextInput", ->
 
   it "should change value correctly", (done) ->
-    assertTextInputChangesValue forms.inputs.TextInput, done
+    assertTextInputChangesValue forms.inputs.TextInput, "input", done
 
   it "should be set to a default value", ->
-    assertTextInputDefaults forms.inputs.TextInput
+    assertTextInputDefaults forms.inputs.TextInput, "input"
 
 describe "PasswordInput", ->
 
   it "should change value correctly", (done) ->
-    assertTextInputChangesValue forms.inputs.PasswordInput, done
+    assertTextInputChangesValue forms.inputs.PasswordInput, "input", done
 
   it "should be set to a default value", ->
-    assertTextInputDefaults forms.inputs.PasswordInput
+    assertTextInputDefaults forms.inputs.PasswordInput, "input"
 
 describe "TextareaInput", ->
 
   it "should change value correctly", (done) ->
-    assertTextInputChangesValue forms.inputs.TextareaInput, done
+    assertTextInputChangesValue forms.inputs.TextareaInput, "textarea", done
 
   it "should be set to a default value", ->
-    assertTextInputDefaults forms.inputs.TextareaInput
+    assertTextInputDefaults forms.inputs.TextareaInput, "textarea"
 
 ###
 describe "DateInput", ->
