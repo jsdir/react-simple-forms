@@ -107,35 +107,30 @@ DateInput = React.createClass
   displayName: "DateInput"
   mixins: [Input]
 
-  getInitialState: ->
-    date = new Date()
-    return {
-      value: @props.value
-      currentYear: date.getFullYear()
-    }
+  componentDidMount: ->
+    @currentYear = (new Date()).getFullYear()
+
+  getDate: ->
+    new Date @props.value
 
   onMonthChange: (e) ->
     month = parseInt e.target.value
-    date = @state.value
+    date = @getDate()
     # Ensure that the day is valid with the selected month.
     # Correct the day if it is invalid.
-    year = @state.value.getFullYear()
+    year = date.getFullYear()
     date.setDate Math.min date.getDate(), daysInMonth month + 1, year
     date.setMonth month
-    @setDate date
+    @props.onChange date
 
   onDayChange: (e) ->
-    date = @state.value
-    date.setDate parseInt e.target.value
-    @setDate date
+    date = @getDate()
+    @props.value.setDate parseInt e.target.value
+    @props.onChange @props.value
 
   onYearChange: (e) ->
-    date = @state.value
+    date = @getDate()
     date.setFullYear parseInt e.target.value
-    @setDate date
-
-  setDate: (date) ->
-    @setState {value: date}
     @props.onChange date
 
   renderMonthSelector: ->
@@ -145,26 +140,26 @@ DateInput = React.createClass
 
     return select
       className: "input-date-month"
-      value: @state.value.getMonth()
+      value: @props.value.getMonth()
       onChange: @onMonthChange
     , months
 
   renderDaySelector: ->
-    fullYear = @state.value.getFullYear()
-    days = [1..daysInMonth(@state.value.getMonth() + 1, fullYear)]
+    fullYear = @props.value.getFullYear()
+    days = [1..daysInMonth(@props.value.getMonth() + 1, fullYear)]
     dayOptions = _.map days, (day) -> option value: day, key: day, day
     return select
       className: "input-date-day"
-      value: @state.value.getDate()
+      value: @props.value.getDate()
       onChange: @onDayChange
     , dayOptions
 
   renderYearSelector: ->
-    years = _.map [@state.currentYear..1900], (year) ->
+    years = _.map [@currentYear..1900], (year) ->
       option value: year, key: year, year
     return select
       className: "input-date-year"
-      value: @state.value.getFullYear()
+      value: @props.value.getFullYear()
       onChange: @onYearChange
     , years
 
