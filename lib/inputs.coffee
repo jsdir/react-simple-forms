@@ -176,10 +176,6 @@ ChoiceInput = React.createClass
   propTypes:
     choices: React.PropTypes.object.isRequired
     btnClass: React.PropTypes.string
-    default: React.PropTypes.string
-
-  getInitialState: ->
-    value: null
 
   onChoiceSelect: (value) ->
     @setState {value}
@@ -191,7 +187,7 @@ ChoiceInput = React.createClass
       button
         key: choice
         onClick: => @onChoiceSelect choice
-        className: btnClass + " " + cx active: @state.value is choice
+        className: btnClass + " " + cx active: @props.value is choice
       , title
 
 module.exports = {
