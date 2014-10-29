@@ -69,7 +69,7 @@ Text =
 
     return ReactCSSTransitionGroup transitionName: "fade", indicator
 
-  renderInput: (el, options) ->
+  renderInput: (component, options) ->
     props = _.extend
       ref: "input"
       value: @props.value
@@ -79,7 +79,7 @@ Text =
     , options
 
     return div className: "form-field",
-      @transferPropsTo el props
+      @transferPropsTo component props
       @renderIndicator()
 
 TextInput = React.createClass

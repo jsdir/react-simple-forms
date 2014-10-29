@@ -2,6 +2,7 @@ _ = require "lodash"
 React = require "react"
 update = require "react/lib/update"
 cloneWithProps = require "react/lib/cloneWithProps"
+ReactPropTransferer = require "react/lib/ReactPropTransferer"
 cx = require "react/lib/cx"
 valids = require "valids"
 
@@ -207,7 +208,7 @@ Field = React.createClass
     @context.onEnterDown @props.name if e.keyCode is 13
 
   render: ->
-    return @transferPropsTo @state.input _.extend
+    propGroups = [@props,
       options: @state.options
       value: @state.value
       onChange: @onChange
@@ -219,7 +220,8 @@ Field = React.createClass
       showIndicators: @context.showIndicators
       className: cx
         "form-input-with-indicator": @context.showIndicators
-    , @state.options.inputOptions
+    , @state.options.inputOptions, @state.input.props]
+    return @state.input _.reduce propGroups, ReactPropTransferer.mergeProps
 
 Message = React.createClass
   displayName: "Message"
