@@ -70,7 +70,7 @@ Text =
     return ReactCSSTransitionGroup transitionName: "fade", indicator
 
   renderInput: (el, options) ->
-    props = _.extend {},
+    props = _.extend
       ref: "input"
       value: @props.value
       onChange: @onChange

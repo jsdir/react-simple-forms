@@ -207,7 +207,7 @@ Field = React.createClass
     @context.onEnterDown @props.name if e.keyCode is 13
 
   render: ->
-    return @transferPropsTo @state.input _.extend {},
+    return @transferPropsTo @state.input _.extend
       options: @state.options
       value: @state.value
       onChange: @onChange
