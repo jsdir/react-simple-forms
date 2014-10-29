@@ -7,3 +7,4 @@ module.exports =
   Message: form.Message
   Submit: form.Submit
   inputs: inputs
+  InputMixin: inputs.InputMixin

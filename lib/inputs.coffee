@@ -23,7 +23,7 @@ monthMap = _.map [
 # Month starts with 1
 daysInMonth = (month, year) -> new Date(year, month, 0).getDate()
 
-Input =
+InputMixin =
   propTypes:
     options: React.PropTypes.object
     value: React.PropTypes.any
@@ -84,28 +84,28 @@ Text =
 
 TextInput = React.createClass
   displayName: "TextInput"
-  mixins: [Input, Text]
+  mixins: [InputMixin, Text]
 
   render: ->
     @renderInput input
 
 PasswordInput = React.createClass
   displayName: "PasswordInput"
-  mixins: [Input, Text]
+  mixins: [InputMixin, Text]
 
   render: ->
     @renderInput input, type: "password"
 
 TextareaInput = React.createClass
   displayName: "TextareaInput"
-  mixins: [Input, Text]
+  mixins: [InputMixin, Text]
 
   render: ->
     @renderInput textarea
 
 DateInput = React.createClass
   displayName: "DateInput"
-  mixins: [Input]
+  mixins: [InputMixin]
 
   componentDidMount: ->
     @currentYear = (new Date()).getFullYear()
@@ -171,7 +171,7 @@ DateInput = React.createClass
 
 ChoiceInput = React.createClass
   displayName: "ChoiceInput"
-  mixins: [Input]
+  mixins: [InputMixin]
 
   propTypes:
     choices: React.PropTypes.object.isRequired
@@ -196,4 +196,6 @@ module.exports = {
   DateInput
   ChoiceInput
   TextareaInput
+
+  InputMixin
 }
