@@ -135,7 +135,7 @@ describe "Form", ->
           cb null, "result"
         , 0
       onSubmit: onSubmit
-    , -> null
+    , -> forms.Field name: "text"
 
     form.submit()
     form.submit()
