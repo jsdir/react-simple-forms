@@ -103,7 +103,7 @@ Form = React.createClass
     data[field] = value
 
     # Only validate the single field.
-    schema = _.pick @props.schema, [field]
+    schema = _.pick @props.schema, field
 
     @validate data, schema, (messages) =>
       if messages
@@ -151,7 +151,8 @@ Form = React.createClass
       @props.onSubmit? @state.data
 
       # Validate data.
-      @validate @state.data, @props.schema, (messages) =>
+      schema = _.pick @props.schema, @state.fieldOrder
+      @validate @state.data, schema, (messages) =>
         @setState submitting: false
         if messages
           @showMessages messages
