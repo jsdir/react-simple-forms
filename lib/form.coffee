@@ -234,6 +234,7 @@ Message = React.createClass
     if @context.message?
       className = @props.className or "error-message"
       return div {className}, @context.message
+    return null
 
 Submit = React.createClass
   displayName: "Submit"
