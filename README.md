@@ -3,7 +3,9 @@ react-simple-forms
 
 Simple forms for react. Loosely based on react-forms.
 
-[![Build Status](https://travis-ci.org/jsdir/react-simple-forms.png)](https://travis-ci.org/jsdir/react-simple-forms) [![NPM version](https://badge.fury.io/js/react-simple-forms.png)](http://badge.fury.io/js/react-simple-forms)
+[![Build Status](https://img.shields.io/travis/jsdir/react-simple-forms.svg?style=flat)](https://travis-ci.org/jsdir/react-simple-forms)
+[![Dependency Status](https://img.shields.io/david/jsdir/react-simple-forms.svg?style=flat)](https://david-dm.org/jsdir/react-simple-forms)
+[![NPM version](https://img.shields.io/npm/v/react-simple-forms.svg?style=flat)](https://www.npmjs.org/package/react-simple-forms)
 
 Installation
 ------------
