@@ -231,7 +231,7 @@ Message = React.createClass
     message: React.PropTypes.string
 
   render: ->
-    className = cx "error-message": @context.message?
+    className = if @context.message? then @props.className or "error-message"
     @transferPropsTo div {className}, @context.message
 
 Submit = React.createClass
