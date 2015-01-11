@@ -10,7 +10,7 @@ inputs = require "./inputs"
 
 {div} = React.DOM
 
-Form = React.createClass
+exports.Form = React.createClass
   displayName: "Form"
 
   propTypes:
@@ -163,7 +163,7 @@ Form = React.createClass
 
   render: -> div null, @props.children()
 
-Field = React.createClass
+exports.Field = React.createClass
   displayName: "Field"
 
   propTypes:
@@ -210,6 +210,7 @@ Field = React.createClass
 
   render: ->
     propGroups = [@props,
+      key: @props.name
       options: @state.options
       value: @state.value
       onChange: @onChange
@@ -224,7 +225,7 @@ Field = React.createClass
     , @state.options.inputOptions, @state.input.props]
     return @state.input _.reduce propGroups, ReactPropTransferer.mergeProps
 
-Message = React.createClass
+exports.Message = React.createClass
   displayName: "Message"
 
   contextTypes:
@@ -236,7 +237,7 @@ Message = React.createClass
       return div {className}, @context.message
     return null
 
-Submit = React.createClass
+exports.Submit = React.createClass
   displayName: "Submit"
 
   propTypes:
@@ -249,5 +250,3 @@ Submit = React.createClass
     cloneWithProps @props.children, onClick: =>
       @props.children.props.onClick?()
       @context.submit()
-
-module.exports = {Form, Field, Message, Submit}

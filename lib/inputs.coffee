@@ -71,6 +71,7 @@ Text =
 
   renderInput: (component, options) ->
     props = _.extend
+      key: @props.key
       ref: "input"
       value: @props.value
       onChange: @onChange
@@ -82,28 +83,28 @@ Text =
       @transferPropsTo component props
       @renderIndicator()
 
-TextInput = React.createClass
+exports.TextInput = React.createClass
   displayName: "TextInput"
   mixins: [InputMixin, Text]
 
   render: ->
     @renderInput input
 
-PasswordInput = React.createClass
+exports.PasswordInput = React.createClass
   displayName: "PasswordInput"
   mixins: [InputMixin, Text]
 
   render: ->
     @renderInput input, type: "password"
 
-TextareaInput = React.createClass
+exports.TextareaInput = React.createClass
   displayName: "TextareaInput"
   mixins: [InputMixin, Text]
 
   render: ->
     @renderInput textarea
 
-DateInput = React.createClass
+exports.DateInput = React.createClass
   displayName: "DateInput"
   mixins: [InputMixin]
 
@@ -169,7 +170,7 @@ DateInput = React.createClass
       @renderDaySelector()
       @renderYearSelector()
 
-ChoiceInput = React.createClass
+exports.ChoiceInput = React.createClass
   displayName: "ChoiceInput"
   mixins: [InputMixin]
 
@@ -183,19 +184,10 @@ ChoiceInput = React.createClass
 
   render: ->
     btnClass = @props.btnClass or ""
-    div className: "group", _.map @props.choices, (title, choice) =>
-      button
-        key: choice
-        onClick: => @onChoiceSelect choice
-        className: btnClass + " " + cx active: @props.value is choice
-      , title
-
-module.exports = {
-  TextInput
-  PasswordInput
-  DateInput
-  ChoiceInput
-  TextareaInput
-
-  InputMixin
-}
+    return div className: "group", key: @props.key,
+      _.map @props.choices, (title, choice) =>
+        button
+          key: choice
+          onClick: => @onChoiceSelect choice
+          className: btnClass + " " + cx active: @props.value is choice
+        , title
