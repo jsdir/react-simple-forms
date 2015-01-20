@@ -4,7 +4,7 @@ update = require "react/lib/update"
 cloneWithProps = require "react/lib/cloneWithProps"
 ReactPropTransferer = require "react/lib/ReactPropTransferer"
 cx = require "react/lib/cx"
-valids = require "valids"
+validate = require "validate.js"
 
 inputs = require "./inputs"
 
@@ -89,11 +89,8 @@ exports.Form = React.createClass
 
     @props.onInput?()
 
-  validate: (data, schema, onResult) ->
-    valids.validate data,
-      schema: schema
-      messages: @props.messages
-    , onResult
+  validate: (data, constraints, onResult) ->
+    validate.async(data, constraints).then onResult, onResult
 
   showMessages: (messages) ->
     @setState message: _.values(messages)[0]
@@ -103,9 +100,9 @@ exports.Form = React.createClass
     data[field] = value
 
     # Only validate the single field.
-    schema = _.pick @props.schema, field
+    constraints = _.pick @props.constraints, field
 
-    @validate data, schema, (messages) =>
+    @validate data, constraints, (messages) =>
       if messages
         @setValid field, {valid: false, interactive}
         unless interactive
