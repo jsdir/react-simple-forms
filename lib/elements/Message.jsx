@@ -7,9 +7,9 @@ export default React.createClass({
   mixins: [FormMixin],
 
   render() {
-    var form = this.getForm();
-    if (form.message) {
-      return <div class={form.errorClass}>form.message</div>
+    var formData = this.getFormData();
+    if (formData.message) {
+      return <div class={formData.errorClass}>formData.message</div>
     }
   }
 });
