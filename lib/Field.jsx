@@ -1,6 +1,8 @@
-import React from 'react';
+import React from 'react/addons';
 
 import FormMixin from './FormMixin';
+
+const {cloneWithProps} = React.addons;
 
 export default React.createClass({
 
@@ -11,6 +13,8 @@ export default React.createClass({
   },
 
   render() {
-    return this.wrapField(this.props.name, this.props.children);
+    var fieldData = this.getFieldData();
+    var props = this.getWrapperProps(fieldData);
+    return cloneWithProps(React.Children.only(this.props.children), props);
   }
 });
