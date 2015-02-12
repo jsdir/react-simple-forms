@@ -4,6 +4,7 @@ exports.Form = require('./lib/Form');
 exports.Mixin = require('./lib/Mixin');
 
 // Elements
+exports.Field = require('./lib/Field');
 exports.Submit = require('./lib/Submit');
 
 /*export {Field} from './lib/Field';

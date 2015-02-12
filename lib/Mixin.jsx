@@ -1,4 +1,5 @@
 var React = require('react/addons');
+var invariant = require('react/lib/invariant');
 
 var cloneWithProps = React.addons.cloneWithProps;
 
@@ -12,6 +13,10 @@ var Mixin = {
   },
 
   makeField: function(element, options) {
+    if (!this.props.name) {
+      invariant(false, 'All fields must have a unique `name` prop');
+    }
+
     var formContext = this.getFormContext();
     var handleEvents = options && options.handleEvents;
 

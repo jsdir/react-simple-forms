@@ -5,8 +5,8 @@ var Mixin = require('./Mixin');
 var Input = React.createClass({
   mixins: [Mixin],
   render: function() {
-    var element = React.Children.only(props.children);
-    return this.makeField(element);
+    var element = React.Children.only(this.props.children);
+    return this.makeField(element, {handleEvents: this.props.handleEvents});
   }
 });
 
