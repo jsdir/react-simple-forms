@@ -7,6 +7,7 @@ var cloneWithProps = React.addons.cloneWithProps;
 
 var Submit = React.createClass({
   mixins: [Mixin],
+
   render: function() {
     var formContext = this.getFormContext();
     var child = React.Children.only(this.props.children);

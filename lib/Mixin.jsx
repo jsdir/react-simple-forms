@@ -5,6 +5,8 @@ var cloneWithProps = React.addons.cloneWithProps;
 
 var Mixin = {
   propTypes: {
+    name: React.PropTypes.string.isRequired,
+    validators: React.PropTypes.object,
     _formContext: React.PropTypes.object.isRequired
   },
 
@@ -27,7 +29,7 @@ var Mixin = {
         if (handleEvents) {
           value = value.target.value;
         }
-        formContext.changeField(this.props.name, value);
+        formContext.changeField(this.props.name, value, this.props.validators);
       }
     });
   }
