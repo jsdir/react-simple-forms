@@ -1,20 +1,13 @@
-import React from 'react/addons';
+var React = require('react');
 
-import FormMixin from './FormMixin';
+var Mixin = require('./Mixin');
 
-const {cloneWithProps} = React.addons;
-
-export default React.createClass({
-
-  mixins: [FormMixin],
-
-  propTypes: {
-    name: React.PropTypes.string.isRequired
-  },
-
-  render() {
-    var fieldData = this.getFieldData();
-    var props = this.getWrapperProps(fieldData);
-    return cloneWithProps(React.Children.only(this.props.children), props);
+var Input = React.createClass({
+  mixins: [Mixin],
+  render: function() {
+    var element = React.Children.only(props.children);
+    return this.makeField(element);
   }
 });
+
+module.exports = Input;

@@ -5,17 +5,17 @@
   "main": "index.js",
   "dependencies": {
     "async": "~0.9.0",
-    "lodash": "~2.4.1",
     "validate.js": "^0.3.2"
   },
   "peerDependencies": {
-    "react": ">=0.12"
+    "react": ">=0.12",
+    "lodash": ">=3.0.0"
   },
   "devDependencies": {
-    "6to5-jest": "^1.0.1",
-    "es6-promise": "^2.0.1",
-    "jest-cli": "^0.2.1",
-    "react": "~0.12.0"
+    "jest-cli": "^0.2.2",
+    "react": "~0.12.0",
+    "react-tools": "^0.12.2",
+    "rsvp": "^3.0.16"
   },
   "scripts": {
     "test": "jest"
@@ -24,17 +24,15 @@
     "unmockedModulePathPatterns": [
       "react"
     ],
-    "scriptPreprocessor": "./node_modules/6to5-jest",
+    "scriptPreprocessor": "<rootDir>/support/preprocessor.js",
     "testFileExtensions": [
-      "es6",
       "js",
       "jsx"
     ],
     "moduleFileExtensions": [
       "js",
       "jsx",
-      "json",
-      "es6"
+      "json"
     ]
   },
   "repository": {
