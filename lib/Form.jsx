@@ -1,5 +1,6 @@
 var _ = require('lodash');
 var React = require('react');
+var invariant = require('react/lib/invariant');
 var RSVP = require('rsvp');
 
 var eachElements = require('./utils/eachElements.js');
@@ -15,11 +16,11 @@ var Form = React.createClass({
   },
 
   componentWillMount: function() {
-    setAvailableValidators(this.props);
+    this.setAvailableValidators(this.props);
   },
 
   componentWillReceiveProps: function(nextProps) {
-    setAvailableValidators(nextProps);
+    this.setAvailableValidators(nextProps);
   },
 
   getInitialState: function() {
@@ -29,8 +30,10 @@ var Form = React.createClass({
   },
 
   getDefaultProps: function() {
-    errorClass: 'Form-error',
-    tabOnEnter: true
+    return {
+      errorClass: 'Form-error',
+      tabOnEnter: true
+    };
   },
 
   getContext: function() {
@@ -90,7 +93,7 @@ var Form = React.createClass({
         return err;
       });
     }))
-      .then(_.compact); // Remove null error messages.
+      .then(_.compact) // Remove null error messages.
       .then(function(errors) {
         // Return null if there are no errors.
         if (_.size(errors) === 0) {
@@ -104,7 +107,7 @@ var Form = React.createClass({
     this.props.onErrors && this.props.onErrors(errors);
   },
 
-  handleSuccess: function(data)
+  handleSuccess: function(data) {
     this.props.onSuccess && this.props.onSuccess(data);
   },
 
@@ -119,9 +122,9 @@ var Form = React.createClass({
     // Check for undefined validators.
     var diff = _.difference(_.keys(validators), this.validatorNames);
     if (diff.length > 0) {
-      invariant(false, 'Validator(s) %s were not defined in the form', diff);
+      invariant(false, 'Validator(s) `%s` were not defined in the form', diff);
     }
-    this.fields[name] = {value: value, validators: validators);
+    this.fields[name] = {value: value, validators: validators};
     this.forceUpdate();
   },
 

@@ -2,7 +2,7 @@ var React = require('react');
 
 var Mixin = require('./Mixin');
 
-var Input = React.createClass({
+var Field = React.createClass({
   mixins: [Mixin],
   render: function() {
     var element = React.Children.only(this.props.children);
@@ -10,4 +10,4 @@ var Input = React.createClass({
   }
 });
 
-module.exports = Input;
+module.exports = Field;
