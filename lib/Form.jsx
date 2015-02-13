@@ -5,6 +5,10 @@ var RSVP = require('rsvp');
 
 var eachElements = require('./utils/eachElements.js');
 
+function isPromise(value) {
+  return value && value.then
+}
+
 var Form = React.createClass({
   propTypes: {
     validators: React.PropTypes.object,
@@ -75,32 +79,38 @@ var Form = React.createClass({
         return RSVP.resolve(null);
       }
 
-      // Consolidate to one error or null
+      // Combine into one resolved error string or null.
       return RSVP.all(_.map(field.validators, function(options, validatorName) {
-        // Validator will return a validation result value (error or null) or a
-        // promise that will be fulfilled with a validation result value.
-        var result = validators[name](field.value, options);
-        if (RSVP.isPromise(result)) {
-          return result;
+        // Validator will return a validation result value (error or null) or
+        // a promise that will be fulfilled with a validation result value.
+        var result = validators[validatorName](field.value, options);
+        if (!isPromise(result)) {
+          // Convert static values to a resolved promise.
+          if (result) {
+            return RSVP.reject(result)
+          }
+          return RSVP.resolve()
         }
-        // Convert static values to fulfilled promises.
-        return RSVP.resolve(result);
-      })).then(function() {
-        // No errors were thrown.
+        return result.then(function(value) {
+          if (value) {
+            return RSVP.reject(value);
+          }
+          return null;
+        });
+      })).then(function(results) {
         return null;
       }).catch(function(err) {
-        // Resolve with the error.
         return err;
       });
-    }))
-      .then(_.compact) // Remove null error messages.
-      .then(function(errors) {
-        // Return null if there are no errors.
-        if (_.size(errors) === 0) {
-          return null;
-        }
-        return errors;
-      });
+    })).then(function(rawErrors) {
+      // Remove null error messages.
+      var errors = _.pick(rawErrors, _.identity);
+      // Return null if there are no errors.
+      if (_.size(errors) === 0) {
+        return null;
+      }
+      return errors;
+    });
   },
 
   handleErrors: function(errors) {

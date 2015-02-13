@@ -10,27 +10,38 @@ var Mixin = {
     _formContext: React.PropTypes.object.isRequired
   },
 
+  componentDidMount: function() {
+    if (this.props.name) {
+      this.setValue(null);
+    }
+  },
+
+  setValue: function(value) {
+    var formContext = this.getFormContext();
+    formContext.changeField(this.props.name, value, this.props.validators);
+  },
+
   getFormContext: function() {
     return this.props._formContext;
   },
 
   makeField: function(element, options) {
-    var self = this;
+    var setValue = this.setValue;
     if (!this.props.name) {
       invariant(false, 'All fields must have a unique `name` prop');
     }
 
-    var formContext = this.getFormContext();
     var handleEvents = options && options.handleEvents;
+    var formContext = this.getFormContext();
 
     return cloneWithProps(element, {
-      name: self.props.name,
-      value: formContext.getField(self.props.name).value,
+      name: this.props.name,
+      value: formContext.getField(this.props.name).value,
       onChange: function(value) {
         if (handleEvents) {
           value = value.target.value;
         }
-        formContext.changeField(self.props.name, value, self.props.validators);
+        setValue(value);
       }
     });
   }
