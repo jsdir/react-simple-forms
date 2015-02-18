@@ -41,7 +41,7 @@ describe('Form', function() {
             resolve();
           });
         }
-      }
+      };
 
       var form = TestUtils.renderIntoDocument(
         <forms.Form validators={validators} onErrors={onErrors}>
@@ -96,5 +96,5 @@ describe('Form', function() {
       }).toThrow('Invariant Violation: Validator(s) `foo` were not defined ' +
         'in the form');
     });
-  })
+  });
 });

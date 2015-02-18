@@ -1,3 +1,4 @@
+/*
 import React from 'react/addons';
 
 import FormMixin from '../FormMixin';
@@ -46,3 +47,4 @@ export default React.createClass({
     </div>;
   }
 });
+*/

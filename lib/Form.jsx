@@ -6,7 +6,7 @@ var RSVP = require('rsvp');
 var eachElements = require('./utils/eachElements.js');
 
 function isPromise(value) {
-  return value && value.then
+  return value && value.then;
 }
 
 var Form = React.createClass({
@@ -87,9 +87,9 @@ var Form = React.createClass({
         if (!isPromise(result)) {
           // Convert static values to a resolved promise.
           if (result) {
-            return RSVP.reject(result)
+            return RSVP.reject(result);
           }
-          return RSVP.resolve()
+          return RSVP.resolve();
         }
         return result.then(function(value) {
           if (value) {
@@ -114,11 +114,15 @@ var Form = React.createClass({
   },
 
   handleErrors: function(errors) {
-    this.props.onErrors && this.props.onErrors(errors);
+    if (this.props.onErrors) {
+      this.props.onErrors(errors);
+    }
   },
 
   handleSuccess: function(data) {
-    this.props.onSuccess && this.props.onSuccess(data);
+    if (this.props.onSuccess) {
+      this.props.onSuccess(data);
+    }
   },
 
   getField: function(name) {

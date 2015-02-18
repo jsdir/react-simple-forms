@@ -1,3 +1,4 @@
+/*
 import React from 'react';
 
 import updateCursors from '../utils/updateCursors';
@@ -16,3 +17,4 @@ export default React.createClass({
     </div>;
   }
 });
+*/

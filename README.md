@@ -147,16 +147,16 @@ Props:
 
   ```json
   {
-    "field": "invalidValue",
+    "field": "message",
     "subset": {
-      "field": "invalidValue"
+      "field": "message"
     },
     "list": {
       0: { // "0" is the index of the subset with the error
-        "field": "invalidValue"
+        "field": "message"
       },
       2: {
-        "field": "invalidValue"
+        "field": "message"
       }
     ]
   }
