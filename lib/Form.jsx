@@ -1,6 +1,7 @@
 var _ = require('lodash');
 var React = require('react');
 var invariant = require('react/lib/invariant');
+var update = require('react/lib/update');
 var RSVP = require('rsvp');
 
 var eachElements = require('./utils/eachElements.js');
@@ -29,7 +30,8 @@ var Form = React.createClass({
 
   getInitialState: function() {
     return {
-      submitting: false
+      submitting: false,
+      fields: {}
     };
   },
 
@@ -52,18 +54,21 @@ var Form = React.createClass({
 
   submit: function() {
     var self = this;
-    this.props.onSubmit && this.props.onSubmit();
-    var data = _.mapValues(this.fields, 'value');
+
+    if (this.props.onSubmit) {
+      this.props.onSubmit();
+    }
+
     this.setState({submitting: true});
 
     // Asynchronously validate all of the field data.
-    this.validate(data)
+    RSVP.hash(_.mapValues(this.state.fields, 'error'))
       .then(function(errors) {
         self.setState({submitting: false});
-        if (errors) {
+        if (!_.isEmpty(_.filter(errors, _.identity))) {
           return self.handleErrors(errors);
         }
-        return self.handleSuccess(data);
+        return self.handleSuccess(_.mapValues(this.state.fields, 'value'));
       });
   },
 
@@ -71,45 +76,36 @@ var Form = React.createClass({
     this.validatorNames = _.keys(props.validators);
   },
 
-  validate: function(data) {
-    var validators = this.props.validators;
-    return RSVP.hash(_.mapValues(this.fields, function(field, name) {
-      // Only check for errors if validators are defined for the field.
-      if (!field.validators) {
-        return RSVP.resolve(null);
-      }
+  validateField: function(name, value, validators) {
+    var self = this;
 
-      // Combine into one resolved error string or null.
-      return RSVP.all(_.map(field.validators, function(options, validatorName) {
-        // Validator will return a validation result value (error or null) or
-        // a promise that will be fulfilled with a validation result value.
-        var result = validators[validatorName](field.value, options);
-        if (!isPromise(result)) {
-          // Convert static values to a resolved promise.
-          if (result) {
-            return RSVP.reject(result);
-          }
-          return RSVP.resolve();
+    // Only check for errors if validators are defined for the field.
+    if (!validators) {
+      return RSVP.resolve(null);
+    }
+
+    // Combine into one resolved error string or null.
+    return RSVP.all(_.map(validators, function(options, validatorName) {
+      // Validator will return a validation result value (error or null) or
+      // a promise that will be fulfilled with a validation result value.
+      var result = self.props.validators[validatorName](value, options);
+      if (!isPromise(result)) {
+        // Convert static values to a resolved promise.
+        if (result) {
+          return RSVP.reject(result);
         }
-        return result.then(function(value) {
-          if (value) {
-            return RSVP.reject(value);
-          }
-          return null;
-        });
-      })).then(function(results) {
-        return null;
-      }).catch(function(err) {
-        return err;
-      });
-    })).then(function(rawErrors) {
-      // Remove null error messages.
-      var errors = _.pick(rawErrors, _.identity);
-      // Return null if there are no errors.
-      if (_.size(errors) === 0) {
-        return null;
+        return RSVP.resolve();
       }
-      return errors;
+      return result.then(function(value) {
+        if (value) {
+          return RSVP.reject(value);
+        }
+        return null;
+      });
+    })).then(function(results) {
+      return null;
+    }).catch(function(err) {
+      return err;
     });
   },
 
@@ -126,20 +122,33 @@ var Form = React.createClass({
   },
 
   getField: function(name) {
-    this.fields = this.fields || {};
-    var field = this.fields[name] || {value: null};
-    this.fields[name] = field;
-    return field;
+    return this.state.fields[name] || {
+      value: null, state: 'pristine', error: null
+    };
   },
 
   changeField: function(name, value, validators) {
+    var self = this;
     // Check for undefined validators.
     var diff = _.difference(_.keys(validators), this.validatorNames);
     if (diff.length > 0) {
       invariant(false, 'Validator(s) `%s` were not defined in the form', diff);
     }
-    this.fields[name] = {value: value, validators: validators};
-    this.forceUpdate();
+
+    var data = {};
+    data[name] = {$set: {value: value, state: 'loading', error: null}};
+    this.setState({fields: update(this.state.fields, data)});
+
+    this.validateField(name, value, validators)
+      .then(function(message) {
+        data = {};
+        if (message) {
+          data[name] = {$set: {state: 'invalid', error: message}};
+        } else {
+          data[name] = {$set: {state: 'valid'}};
+        }
+        self.setState({fields: update(self.state.fields, data)});
+      });
   },
 
   render: function() {

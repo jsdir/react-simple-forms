@@ -33,10 +33,12 @@ var Mixin = {
 
     var handleEvents = options && options.handleEvents;
     var formContext = this.getFormContext();
+    var field = formContext.getField(this.props.name);
 
     return cloneWithProps(element, {
+      className: field.state === 'invalid' && formContext.errorClass,
       name: this.props.name,
-      value: formContext.getField(this.props.name).value,
+      value: field.value,
       onChange: function(value) {
         if (handleEvents) {
           value = value.target.value;
