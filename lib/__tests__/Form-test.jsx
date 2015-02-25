@@ -2,7 +2,9 @@ jest.dontMock('..');
 
 var React = require('react/addons');
 var RSVP = require('rsvp');
+
 var forms = require('..');
+var testUtils = require('./testUtils');
 
 var TestUtils = React.addons.TestUtils;
 
@@ -96,5 +98,38 @@ describe('Form', function() {
       }).toThrow('Invariant Violation: Validator(s) `foo` were not defined ' +
         'in the form');
     });
+  });
+
+  it('should initially focus on the first input', function() {
+    var form = testUtils.createForm();
+    expect(form.fields.field1.focus).toBe(true);
+  });
+
+  it('should tab on enter by default', function() {
+    var form = testUtils.createForm();
+
+    TestUtils.Simulate.key(form.node, 'Tab');
+    expect(forms.fields.field2.focus).toBe(true);
+    expect(form.submitted).toBe(false);
+
+    TestUtils.Simulate.key(form.node, 'Tab');
+    expect(form.submitted).toBe(true);
+  });
+
+  it('should submit on enter if requested', function() {
+    var form = testUtils.createForm({submitOnEnter: true});
+    TestUtils.Simulate.keyDown(form.node, {key: 'Enter'});
+    expect(form.submitted).toBe(true);
+  });
+
+  it('should set initial values if requested', function() {
+    var form = testUtils.createForm({
+      values: {
+        field1: 'foo', field2: 'bar'
+      }
+    });
+
+    expect(form.inputs.input1.value).toBe('foo');
+    expect(form.inputs.input2.value).toBe('bar');
   });
 });
