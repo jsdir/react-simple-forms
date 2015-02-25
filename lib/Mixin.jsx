@@ -12,17 +12,22 @@ var Mixin = {
 
   componentDidMount: function() {
     if (this.props.name) {
-      this.setValue(null);
+      this.setValue(null, true);
     }
   },
 
-  setValue: function(value) {
+  setValue: function(value, pristine) {
     var formContext = this.getFormContext();
-    formContext.changeField(this.props.name, value, this.props.validators);
+    formContext.changeField(this.props.name, value,
+      this.props.validators, pristine);
   },
 
   getFormContext: function() {
     return this.props._formContext;
+  },
+
+  getFieldData: function() {
+    return this.getFormContext().getField(this.props.name);
   },
 
   makeField: function(element, options) {
@@ -33,12 +38,12 @@ var Mixin = {
 
     var handleEvents = options && options.handleEvents;
     var formContext = this.getFormContext();
-    var field = formContext.getField(this.props.name);
+    var fieldData = this.getFieldData();
 
     return cloneWithProps(element, {
-      className: field.state === 'invalid' && formContext.errorClass,
+      className: fieldData.state === 'invalid' && formContext.errorClass,
       name: this.props.name,
-      value: field.value,
+      value: fieldData.value,
       onChange: function(value) {
         if (handleEvents) {
           value = value.target.value;

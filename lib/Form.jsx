@@ -31,6 +31,7 @@ var Form = React.createClass({
   getInitialState: function() {
     return {
       submitting: false,
+      submitError: null,
       fields: {}
     };
   },
@@ -48,6 +49,7 @@ var Form = React.createClass({
       changeField: this.changeField,
       submit: this.submit,
       submitting: this.state.submitting,
+      submitError: this.state.submitError,
       errorClass: this.props.errorClass
     };
   },
@@ -59,16 +61,22 @@ var Form = React.createClass({
       this.props.onSubmit();
     }
 
-    this.setState({submitting: true});
+    this.setState({submitting: true, submitError: null});
 
     // Asynchronously validate all of the field data.
-    RSVP.hash(_.mapValues(this.state.fields, 'error'))
-      .then(function(errors) {
-        self.setState({submitting: false});
-        if (!_.isEmpty(_.filter(errors, _.identity))) {
-          return self.handleErrors(errors);
+    RSVP.hash(this._loadingValidators || {})
+      .then(function() {
+        var errors = _.mapValues(self.state.fields, 'error');
+        var filteredErrors = _.filter(errors, _.identity);
+        if (!_.isEmpty(filteredErrors)) {
+          return self.handleErrors(filteredErrors);
         }
-        return self.handleSuccess(_.mapValues(this.state.fields, 'value'));
+
+        return self.handleSuccess(_.mapValues(self.state.fields, 'value'));
+      })
+      .catch(function(err) {
+        console.error(err, err.stack);
+        throw err;
       });
   },
 
@@ -113,21 +121,38 @@ var Form = React.createClass({
     if (this.props.onErrors) {
       this.props.onErrors(errors);
     }
+    self.setState({submitting: false});
   },
 
   handleSuccess: function(data) {
+    var self = this;
     if (this.props.onSuccess) {
-      this.props.onSuccess(data);
+      var callbackUsed = false;
+      this.props.onSuccess(data, function(promise) {
+        callbackUsed = true;
+        promise.then(function() {
+          self.setState({submitting: false});
+        }).catch(function(err) {
+          self.setState({submitError: err, submitting: false});
+        });
+      });
+
+      if (callbackUsed) {
+        return;
+      }
     }
+
+    self.setState({submitting: false});
   },
 
   getField: function(name) {
+    var values = this.props.values || {};
     return this.state.fields[name] || {
-      value: null, state: 'pristine', error: null
+      value: (values[name] || null), state: 'valid', error: null
     };
   },
 
-  changeField: function(name, value, validators) {
+  changeField: function(name, value, validators, pristine) {
     var self = this;
     // Check for undefined validators.
     var diff = _.difference(_.keys(validators), this.validatorNames);
@@ -139,16 +164,26 @@ var Form = React.createClass({
     data[name] = {$set: {value: value, state: 'loading', error: null}};
     this.setState({fields: update(this.state.fields, data)});
 
-    this.validateField(name, value, validators)
+    // Keep track of loading validators.
+    this._loadingValidators = this._loadingValidators || {};
+    var promise = this.validateField(name, value, validators)
       .then(function(message) {
-        data = {};
+        var fieldData;
         if (message) {
-          data[name] = {$set: {state: 'invalid', error: message}};
+          fieldData = {state: 'invalid', error: message};
         } else {
-          data[name] = {$set: {state: 'valid'}};
+          fieldData = {state: 'valid'};
         }
+        fieldData.pristine = pristine ? true : false;
+        data = {};
+        data[name] = {$merge: fieldData};
         self.setState({fields: update(self.state.fields, data)});
+      })
+      .finally(function() {
+        delete self._loadingValidators[name];
       });
+
+    this._loadingValidators[name] = promise;
   },
 
   render: function() {
