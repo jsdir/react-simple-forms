@@ -67,7 +67,7 @@ var Form = React.createClass({
     RSVP.hash(this._loadingValidators || {})
       .then(function() {
         var errors = _.mapValues(self.state.fields, 'error');
-        var filteredErrors = _.filter(errors, _.identity);
+        var filteredErrors = _.pick(errors, _.identity);
         if (!_.isEmpty(filteredErrors)) {
           return self.handleErrors(filteredErrors);
         }
@@ -75,8 +75,7 @@ var Form = React.createClass({
         return self.handleSuccess(_.mapValues(self.state.fields, 'value'));
       })
       .catch(function(err) {
-        console.error(err, err.stack);
-        throw err;
+        console.error((err && err.stack) || err);
       });
   },
 
@@ -121,7 +120,7 @@ var Form = React.createClass({
     if (this.props.onErrors) {
       this.props.onErrors(errors);
     }
-    self.setState({submitting: false});
+    this.setState({submitting: false});
   },
 
   handleSuccess: function(data) {
