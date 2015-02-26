@@ -47,11 +47,17 @@ var Form = React.createClass({
     return {
       getField: this.getField,
       changeField: this.changeField,
+      focus: this.focus,
       submit: this.submit,
       submitting: this.state.submitting,
       submitError: this.state.submitError,
       errorClass: this.props.errorClass
     };
+  },
+
+  focus: function(name) {
+    this.focusedField = name;
+    this.forceUpdate();
   },
 
   submit: function() {
@@ -62,8 +68,7 @@ var Form = React.createClass({
     }
 
     this.setState({submitting: true, submitError: null});
-
-    // Asynchronously validate all of the field data.
+    // Asynchronously wait for all loading validations before using errors.
     RSVP.hash(this._loadingValidators || {})
       .then(function() {
         var errors = _.mapValues(self.state.fields, 'error');
@@ -144,10 +149,17 @@ var Form = React.createClass({
     self.setState({submitting: false});
   },
 
+  isFocused: function(name) {
+    return name === this.focusedField;
+  },
+
   getField: function(name) {
     var values = this.props.values || {};
     return this.state.fields[name] || {
-      value: (values[name] || null), state: 'valid', error: null
+      value: (values[name] || null),
+      state: 'valid',
+      error: null,
+      focused: this.isFocused(name)
     };
   },
 
@@ -166,7 +178,12 @@ var Form = React.createClass({
     }
 
     var data = {};
-    data[name] = {$set: {value: value, state: 'loading', error: null}};
+    data[name] = {$set: {
+      value: value,
+      state: 'loading',
+      error: null,
+      focused: this.isFocused(name)
+    }};
     this.setState({fields: update(this.state.fields, data)});
 
     // Keep track of loading validators.
@@ -191,6 +208,18 @@ var Form = React.createClass({
     this._loadingValidators[name] = promise;
   },
 
+  handleKeyDown: function(e) {
+    if (e.key === 'Enter') {
+      var index = _.indexOf(this.fieldNames, this.focusedField);
+      if (index + 1 < this.fieldNames.length) {
+        this.focusedField = this.fieldNames[index + 1];
+        this.forceUpdate();
+      } else {
+        this.submit();
+      }
+    }
+  },
+
   render: function() {
     var formContext = this.getContext();
     // Add form data to all field props.
@@ -202,12 +231,16 @@ var Form = React.createClass({
         child.props._formContext = formContext;
         // Add field name to an ordered field list used for tabbing and
         // getting the first message.
-        fieldNames.push(child.props.name);
+        if (child.props.name) {
+          fieldNames.push(child.props.name);
+        }
       }
     });
 
     this.fieldNames = fieldNames;
-    return <form>{this.props.children}</form>;
+    this.focusedField = this.fieldNames[0];
+
+    return <form onKeyDown={this.handleKeyDown}>{this.props.children}</form>;
   }
 });
 

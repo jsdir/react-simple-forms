@@ -100,19 +100,23 @@ describe('Form', function() {
     });
   });
 
-  xit('should initially focus on the first input', function() {
+  it('should initially focus on the first input', function() {
     var form = testUtils.createForm();
-    expect(form.fields.field1.focus).toBe(true);
+    jest.runAllTimers();
+    expect(document.activeElement.getAttribute('class')).toBe('field1');
+    expect(form.fields.field1.focused).toBe(true);
   });
 
   xit('should tab on enter by default', function() {
     var form = testUtils.createForm();
-
-    TestUtils.Simulate.key(form.node, 'Tab');
-    expect(forms.fields.field2.focus).toBe(true);
+    jest.runAllTimers();
+    TestUtils.Simulate.keyDown(form.fields.field1.node, {key: 'Enter'});
+    expect(document.activeElement.getAttribute('class')).toBe('field2');
+    expect(form.fields.field2.focused).toBe(true);
     expect(form.submitted).toBe(false);
 
-    TestUtils.Simulate.key(form.node, 'Tab');
+    TestUtils.Simulate.keyDown(form.node, {key: 'Enter'});
+    // jest.runAllTimers();
     expect(form.submitted).toBe(true);
   });
 

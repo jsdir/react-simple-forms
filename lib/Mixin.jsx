@@ -30,6 +30,16 @@ var Mixin = {
     return this.getFormContext().getField(this.props.name);
   },
 
+  componentWillUpdate: function() {
+    var fieldData = this.getFieldData();
+    if (fieldData.focused && this.refs.element) {
+      var node = this.refs.element.getDOMNode();
+      if (node.focus) {
+        node.focus();
+      }
+    }
+  },
+
   makeField: function(element, options) {
     var setValue = this.setValue;
     if (!this.props.name) {
@@ -44,6 +54,11 @@ var Mixin = {
       className: fieldData.state === 'invalid' && formContext.errorClass,
       name: this.props.name,
       value: fieldData.value,
+      ref: 'element',
+      // TODO: merge handlers with existing props
+      onFocus: function() {
+        fieldData.focus(this.props.name);
+      },
       onChange: function(value) {
         if (handleEvents) {
           value = value.target.value;
