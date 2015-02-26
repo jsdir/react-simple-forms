@@ -153,6 +153,12 @@ var Form = React.createClass({
 
   changeField: function(name, value, validators, pristine) {
     var self = this;
+
+    // Do not set the initial value to null if there are default values.
+    if (pristine && this.props.values) {
+      value = this.props.values[name] || null;
+    }
+
     // Check for undefined validators.
     var diff = _.difference(_.keys(validators), this.validatorNames);
     if (diff.length > 0) {

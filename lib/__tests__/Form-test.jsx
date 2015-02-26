@@ -122,7 +122,7 @@ describe('Form', function() {
     expect(form.submitted).toBe(true);
   });
 
-  xit('should set initial values if requested', function() {
+  it('should set initial values if requested', function() {
     var form = testUtils.createForm({
       values: {
         field1: 'foo', field2: 'bar'
