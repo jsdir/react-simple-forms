@@ -104,26 +104,13 @@ describe('Form', function() {
     var form = testUtils.createForm();
     jest.runAllTimers();
     expect(document.activeElement.getAttribute('class')).toBe('field1');
-    expect(form.fields.field1.focused).toBe(true);
+    expect(form.fields.field1.first).toBe(true);
   });
 
-  xit('should tab on enter by default', function() {
+  it('should submit on enter', function() {
     var form = testUtils.createForm();
-    jest.runAllTimers();
     TestUtils.Simulate.keyDown(form.fields.field1.node, {key: 'Enter'});
-    expect(document.activeElement.getAttribute('class')).toBe('field2');
-    expect(form.fields.field2.focused).toBe(true);
-    expect(form.submitted).toBe(false);
-
-    TestUtils.Simulate.keyDown(form.node, {key: 'Enter'});
-    // jest.runAllTimers();
-    expect(form.submitted).toBe(true);
-  });
-
-  xit('should submit on enter if requested', function() {
-    var form = testUtils.createForm({submitOnEnter: true});
-    TestUtils.Simulate.keyDown(form.node, {key: 'Enter'});
-    expect(form.submitted).toBe(true);
+    expect(form.mixin.submitting).toBe(true);
   });
 
   it('should set initial values if requested', function() {

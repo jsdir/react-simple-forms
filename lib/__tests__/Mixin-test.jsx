@@ -60,8 +60,9 @@ describe('Mixin', function() {
   it('should recieve submit progress', function() {
     var deferred = RSVP.defer();
     var form = testUtils.createForm({
-      onSuccess: function(data, cb) {
-        cb(deferred.promise);
+      onSuccess: function(data) {
+        expect(data).toEqual({field1: null, field2: null});
+        return deferred.promise;
       }
     });
 
@@ -77,8 +78,8 @@ describe('Mixin', function() {
     var state = {};
     state.promise = deferred.promise;
     var form = testUtils.createForm({
-      onSuccess: function(data, cb) {
-        cb(state.promise);
+      onSuccess: function(data) {
+        return state.promise;
       }
     });
 

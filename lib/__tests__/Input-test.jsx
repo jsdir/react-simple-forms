@@ -1,10 +1,5 @@
-jest.autoMockOff();
-jest.dontMock('..');
-jest.dontMock('rsvp');
-
 var React = require('react');
 
-var RSVP = require('rsvp');
 var forms = require('..');
 var testUtils = require('./testUtils');
 
