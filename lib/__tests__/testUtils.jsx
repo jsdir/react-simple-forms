@@ -20,20 +20,22 @@ exports.createForm = function(props) {
   var FormInput = React.createClass({
     mixins: [forms.Mixin],
     render: function() {
-      var fieldData = this.getFieldData();
-      this.props.state.state = fieldData.state;
-      this.props.state.value = fieldData.value;
-      this.props.state.first = fieldData.first;
-      return this.makeField(<input className={this.props.className}/>, {handleEvents: true});
+      var fieldState = this.getFieldState();
+      this.props.state.state = fieldState.state;
+      this.props.state.value = fieldState.value;
+      this.props.state.first = fieldState.first;
+      return this.renderField(
+        <input className={this.props.className}/>
+      , {handleEvents: true});
     }
   });
 
   var MixinListener = React.createClass({
     mixins: [forms.Mixin],
     render: function() {
-      var formContext = this.getFormContext();
-      mixin.submitting = formContext.submitting;
-      mixin.submitError = formContext.submitError;
+      var formState = this.getFormState();
+      mixin.submitting = formState.submitting;
+      mixin.submitError = formState.submitError;
 
       return <noscript/>;
     }

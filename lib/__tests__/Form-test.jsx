@@ -12,7 +12,7 @@ describe('Form', function() {
 
   describe('validation', function() {
 
-    pit('should work', function() {
+    pit('should validate form values', function() {
       var deferred = RSVP.defer();
 
       function onErrors(errors) {
@@ -95,12 +95,12 @@ describe('Form', function() {
 
         var inputEl = TestUtils.findRenderedDOMComponentWithClass(form, 'field');
         TestUtils.Simulate.change(inputEl, {target: {value: 'text'}});
-      }).toThrow('Invariant Violation: Validator(s) `foo` were not defined ' +
+      }).toThrow('Invariant Violation: Validator(s) `foo` not defined ' +
         'in the form');
     });
   });
 
-  it('should initially focus on the first input', function() {
+  xit('should initially focus on the first input', function() {
     var form = testUtils.createForm();
     jest.runAllTimers();
     expect(document.activeElement.getAttribute('class')).toBe('field1');
@@ -113,9 +113,9 @@ describe('Form', function() {
     expect(form.mixin.submitting).toBe(true);
   });
 
-  it('should set initial values if requested', function() {
+  it('should set default values if requested', function() {
     var form = testUtils.createForm({
-      values: {
+      defaultValues: {
         field1: 'foo', field2: 'bar'
       }
     });

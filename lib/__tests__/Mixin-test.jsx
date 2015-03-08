@@ -13,7 +13,7 @@ describe('Mixin', function() {
   var MixinInput = React.createClass({
     mixins: [forms.Mixin],
     render: function() {
-      return this.makeField(<input className="input"/>, {handleEvents: true});
+      return this.renderField(<input className="input"/>, {handleEvents: true});
     }
   });
 
