@@ -7,7 +7,7 @@
     "lodash": "^3.3.0"
   },
   "peerDependencies": {
-    "react": ">=0.12"
+    "react": "0.12.x"
   },
   "devDependencies": {
     "jest-cli": "^0.2.2",
