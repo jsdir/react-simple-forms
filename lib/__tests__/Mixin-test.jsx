@@ -117,10 +117,12 @@ describe('Mixin', function() {
     var field1 = form.fields.field1;
     jest.runAllTimers();
     expect(field1.state).toBe('valid');
+    expect(field1.isPristine).toBe(true);
 
     testUtils.changeValue(field1.node, 'valid');
     jest.runAllTimers();
     expect(field1.state).toBe('valid');
+    expect(field1.isPristine).toBe(false);
 
     testUtils.changeValue(field1.node, 'invalid');
     jest.runAllTimers();
@@ -133,51 +135,5 @@ describe('Mixin', function() {
     deferred.resolve();
     jest.runAllTimers();
     expect(field1.state).toBe('valid');
-  });
-
-  xdescribe('on submit', function() {
-
-    it('should set `firstInvalid`', function() {
-      var form = testUtils.createForm();
-      testUtils.changeValue(form.fields.field1, 'invalid');
-      testUtils.changeValue(form.fields.field2, 'invalid');
-
-      form.submit();
-
-      expect(form.fields.field1.firstInvalid).toBe(true);
-      expect(form.fields.field2.firstInvalid).toBe(false);
-
-      // Test that `firstInvalid` is `false` once the feield becomes valid.
-      testUtils.changeValue(form.fields.field1, 'valid');
-
-      expect(form.fields.field1.firstInvalid).toBe(false);
-      expect(form.fields.field2.firstInvalid).toBe(false);
-    });
-
-    it('should set `indicateValidity` to `true`', function() {
-      var form = testUtils.createForm();
-      expect(form.fields.field1.indicateValidity).toBe(false);
-      expect(form.fields.field2.indicateValidity).toBe(false);
-
-      form.submit();
-
-      expect(form.fields.field1.indicateValidity).toBe(true);
-      expect(form.fields.field2.indicateValidity).toBe(true);
-    });
-  });
-
-  xdescribe('on blur', function() {
-
-    it('should have indicateValidity set unless pristine', function() {
-      var form = testUtils.createForm();
-      TestUtils.Simulate.focus(form.inputs.input2.node);
-      expect(form.fields.field1.indicateValidity).toBe(false);
-
-      TestUtils.Simulate.focus(form.fields.field1.node);
-      testUtils.changeValue(form.fields.field1.node, 'foo');
-
-      TestUtils.Simulate.focus(form.fields.field2.node);
-      expect(form.fields.field1.indicateValidity).toBe(true);
-    });
   });
 });

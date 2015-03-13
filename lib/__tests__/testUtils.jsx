@@ -23,7 +23,9 @@ exports.createForm = function(props) {
       var fieldState = this.getFieldState();
       this.props.state.state = fieldState.state;
       this.props.state.value = fieldState.value;
-      this.props.state.first = fieldState.first;
+      this.props.state.isFirst = fieldState.isFirst;
+      this.props.state.isPristine = fieldState.isPristine;
+
       return this.renderField(
         <input className={this.props.className}/>
       , {handleEvents: true});
@@ -37,7 +39,7 @@ exports.createForm = function(props) {
       mixin.submitting = formState.submitting;
       mixin.submitError = formState.submitError;
 
-      return <noscript/>;
+      return null;
     }
   });
 

@@ -113,11 +113,12 @@ describe('Form', function() {
     });
   });
 
+  // TODO
   xit('should initially focus on the first input', function() {
     var form = testUtils.createForm();
     jest.runAllTimers();
     expect(document.activeElement.getAttribute('class')).toBe('field1');
-    expect(form.fields.field1.first).toBe(true);
+    expect(form.fields.field1.isFirst).toBe(true);
   });
 
   it('should submit on enter', function() {
