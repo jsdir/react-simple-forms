@@ -98,6 +98,19 @@ describe('Form', function() {
       }).toThrow('Invariant Violation: Validator(s) `foo` not defined ' +
         'in the form');
     });
+
+    it('should allow values to be set manually', function() {
+      var form = TestUtils.renderIntoDocument(
+        <forms.Form>
+          <forms.Field name="field">
+            <input className="field"/>
+          </forms.Field>
+        </forms.Form>
+      );
+      form.changeFieldValue('field', 'value');
+      var inputEl = TestUtils.findRenderedDOMComponentWithClass(form, 'field');
+      expect(inputEl.getDOMNode().value).toBe('value');
+    });
   });
 
   xit('should initially focus on the first input', function() {
